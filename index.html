@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Shaan Wocker – Brand Kit</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<title>Brand Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --black:   #080808;
@@ -49,12 +49,24 @@
     justify-content: space-between;
     padding: 1.6rem 3rem;
     border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 0.8rem;
   }
   .brand { display: flex; align-items: center; gap: 1rem; }
   .brand-mark { font-family: var(--serif); font-size: 1.1rem; color: var(--gold); font-weight: 700; }
   .brand-sep { color: var(--border); font-size: 1.2rem; }
   .brand-sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 300; }
+  .header-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
   .header-badge { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,149,42,0.35); padding: 0.35rem 0.9rem; border-radius: 20px; font-weight: 500; }
+
+  /* Gmail widget */
+  .gmail-widget { display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; }
+  .gmail-connected { color: #4ade80; font-weight: 500; letter-spacing: 0.05em; }
+  .gmail-email { color: var(--muted); font-size: 0.65rem; }
+  .btn-gmail { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.9rem; border-radius: 20px; border: 1px solid rgba(201,149,42,0.4); background: transparent; color: var(--gold); font-family: var(--body); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn-gmail:hover { background: rgba(201,149,42,0.1); border-color: var(--gold); }
+  .btn-gmail-disconnect { border-color: rgba(255,80,80,0.4); color: #ff8080; }
+  .btn-gmail-disconnect:hover { background: rgba(255,80,80,0.08); border-color: #ff8080; }
 
   .tabs { display: flex; padding: 0 3rem; border-bottom: 1px solid var(--border); background: var(--black); position: sticky; top: 0; z-index: 10; }
   .tab { padding: 1rem 1.6rem; cursor: pointer; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.25s; }
@@ -78,19 +90,53 @@
   input, textarea, select { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.9rem; color: var(--white); font-family: var(--body); font-size: 0.85rem; font-weight: 300; outline: none; transition: border-color 0.2s; resize: vertical; }
   input:focus, textarea:focus, select:focus { border-color: rgba(201,149,42,0.6); }
   select option { background: #1a1a1a; }
+  input[type="color"] { padding: 0.2rem 0.3rem; height: 2.4rem; cursor: pointer; }
 
   .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.8rem; border-radius: 30px; border: none; cursor: pointer; font-family: var(--body); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; transition: all 0.25s; margin-top: 1.4rem; }
   .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #080808; }
   .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,149,42,0.25); }
   .btn-outline { background: transparent; color: var(--gold); border: 1px solid rgba(201,149,42,0.5); margin-top: 0; padding: 0.45rem 1.1rem; font-size: 0.68rem; }
   .btn-outline:hover { background: rgba(201,149,42,0.08); border-color: var(--gold); }
+  .btn-draft { background: #1a2a1a; color: #4ade80; border: 1px solid rgba(74,222,128,0.4); margin-top: 0; padding: 0.45rem 1.1rem; font-size: 0.68rem; }
+  .btn-draft:hover { background: rgba(74,222,128,0.12); border-color: #4ade80; }
+  .btn-draft:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .tip { border-left: 2px solid rgba(201,149,42,0.4); padding: 0.9rem 1.2rem; margin-top: 1.4rem; font-size: 0.8rem; color: var(--muted); line-height: 1.7; font-weight: 300; }
   .tip strong { color: var(--gold-lt); font-weight: 500; }
 
+  /* Status messages */
+  .status-msg { font-size: 0.78rem; padding: 0.65rem 1rem; border-radius: 8px; margin-top: 0.8rem; font-weight: 400; line-height: 1.5; }
+  .status-success { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; }
+  .status-error   { background: rgba(255,80,80,0.1);  border: 1px solid rgba(255,80,80,0.3);  color: #ff8080; }
+  .status-info    { background: rgba(201,149,42,0.08); border: 1px solid rgba(201,149,42,0.25); color: var(--gold-lt); }
+
   .live-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); font-weight: 500; }
   .live-badge::before { content:''; width: 6px; height: 6px; border-radius: 50%; background: var(--gold2); box-shadow: 0 0 6px var(--gold2); animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Preset buttons */
+  .preset-row { display: flex; gap: 0.6rem; margin-bottom: 1.4rem; flex-wrap: wrap; }
+  .btn-preset { padding: 0.45rem 1.1rem; border-radius: 20px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--muted); font-family: var(--body); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn-preset:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-preset.active { border-color: var(--gold); background: rgba(201,149,42,0.12); color: var(--gold); }
+
+  /* Color row */
+  .color-row { display: flex; align-items: center; gap: 0.8rem; margin-top: 1.1rem; }
+  .color-row label { margin: 0; }
+  .color-row input[type="color"] { width: 44px; flex-shrink: 0; }
+  .color-hex { font-size: 0.8rem; color: var(--muted); font-weight: 300; }
+
+  /* Brand mini-preview */
+  .brand-mini-preview { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+  .bmp-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .bmp-header { background: #080808; padding: 1rem 1.2rem; border-radius: 8px; display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; border: 1px solid #1e1a10; }
+  .bmp-logo { width:32px;height:32px;border:1px solid rgba(201,149,42,0.5);border-radius:5px;display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:0.75rem;flex-shrink:0; }
+  .bmp-name { font-family:'Playfair Display',serif;color:var(--gold);font-size:0.85rem;font-weight:700; }
+  .bmp-tag { font-size:0.6rem;color:#666;letter-spacing:0.1em;text-transform:uppercase; }
+  .bmp-li { display: flex; align-items: center; gap: 0.7rem; background: #fff; border-radius: 8px; padding: 0.9rem 1rem; }
+  .bmp-avatar { width:36px;height:36px;border-radius:50%;background:#080808;border:2px solid var(--gold);display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:0.75rem;flex-shrink:0; }
+  .bmp-li-name { font-weight:700;font-size:0.8rem;color:#000; }
+  .bmp-li-tag { font-size:0.65rem;color:#666; }
 
   /* EMAIL PREVIEW */
   #email-preview-wrap { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-top: 0.8rem; }
@@ -98,30 +144,35 @@
   .ep-dot { width:10px;height:10px;border-radius:50%; }
   .ep-header-dark { background: #080808; padding: 1.6rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e1a10; }
   .ep-brand { display: flex; align-items: center; gap: 0.8rem; }
-  .ep-logo-box { width:38px;height:38px;border:1px solid rgba(201,149,42,0.5);border-radius:6px;display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:900;color:#c9952a;font-size:0.85rem;flex-shrink:0; }
-  .ep-brand-name { font-family: 'Playfair Display', serif; font-weight: 700; color: #c9952a; font-size: 0.95rem; }
+  .ep-logo-box { width:38px;height:38px;border:1px solid rgba(201,149,42,0.5);border-radius:6px;display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:0.85rem;flex-shrink:0; }
+  .ep-brand-name { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--gold); font-size: 0.95rem; }
   .ep-brand-tag { font-size: 0.65rem; color: #666; letter-spacing: 0.12em; text-transform: uppercase; }
   .ep-issue-label { font-size: 0.65rem; color: #555; letter-spacing: 0.08em; text-transform: uppercase; }
-  .ep-wave { height: 3px; background: linear-gradient(90deg, transparent, #c9952a 30%, #e8b84b 60%, transparent); }
+  .ep-wave { height: 3px; background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold2) 60%, transparent); }
   .ep-body-wrap { padding: 2rem 2.2rem; font-family: 'Jost', sans-serif; }
   .ep-greeting { font-size: 0.9rem; color: #777; margin-bottom: 1rem; }
   .ep-subject { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; line-height: 1.2; color: #0e0e0e; margin-bottom: 1.2rem; }
   .ep-body-text { font-size: 0.88rem; color: #555; line-height: 1.8; margin-bottom: 1.6rem; font-weight: 300; }
-  .ep-cta-btn { display:inline-block;background:#080808;color:#c9952a;border:1px solid rgba(201,149,42,0.5);padding:0.7rem 1.8rem;border-radius:30px;font-size:0.75rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;margin-bottom:2rem; }
+  .ep-cta-btn { display:inline-block;background:#080808;color:var(--gold);border:1px solid rgba(201,149,42,0.5);padding:0.7rem 1.8rem;border-radius:30px;font-size:0.75rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;margin-bottom:2rem; }
   .ep-divider { border:none;border-top:1px solid #eeebe3;margin:1.5rem 0; }
   .ep-tags { display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem; }
   .ep-tag { background:#faf6ed;color:#a07820;border:1px solid #e8d9b0;padding:0.3rem 0.75rem;border-radius:20px;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase; }
   .ep-footer-dark { background:#080808;padding:1.2rem 2.2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;border-top:1px solid #1e1a10; }
-  .ep-footer-name { font-family:'Playfair Display',serif;color:#c9952a;font-size:0.85rem;font-weight:700; }
+  .ep-footer-name { font-family:'Playfair Display',serif;color:var(--gold);font-size:0.85rem;font-weight:700; }
   .ep-footer-site { font-size:0.65rem;color:#555;margin-top:2px;letter-spacing:0.06em; }
   .ep-footer-links { font-size:0.65rem;color:#444;letter-spacing:0.05em; }
-  .ep-footer-links a { color:#c9952a;text-decoration:none;margin-left:0.8rem; }
+  .ep-footer-links a { color:var(--gold);text-decoration:none;margin-left:0.8rem; }
+
+  /* Export row */
+  .export-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+  .gmail-draft-section { margin-top: 1.2rem; padding: 1.2rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; }
+  .gmail-draft-label { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.7rem; }
 
   /* LINKEDIN */
   .li-wrap { background:#f3f2ef;border-radius:12px;padding:1.5rem;margin-top:0.8rem; }
   .li-post { background:#fff;border-radius:10px;box-shadow:0 2px 16px rgba(0,0,0,0.1);overflow:hidden;max-width:560px;margin:0 auto; }
   .li-header { display:flex;align-items:center;gap:0.9rem;padding:1.1rem 1.3rem 0.6rem; }
-  .li-avatar { width:50px;height:50px;border-radius:50%;background:#080808;border:2px solid #c9952a;display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:900;color:#c9952a;font-size:1rem;flex-shrink:0; }
+  .li-avatar { width:50px;height:50px;border-radius:50%;background:#080808;border:2px solid var(--gold);display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:1rem;flex-shrink:0; }
   .li-name { font-weight:700;font-size:0.9rem;color:#000;font-family:'Jost',sans-serif; }
   .li-title { font-size:0.72rem;color:#666; }
   .li-time { font-size:0.66rem;color:#aaa;margin-top:1px; }
@@ -136,23 +187,95 @@
 
   .output-box { background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:1.2rem;font-size:0.82rem;line-height:1.75;color:var(--white);white-space:pre-wrap;min-height:120px;margin-top:1rem;font-weight:300; }
   .copy-row { display:flex;justify-content:flex-end;margin-top:0.6rem; }
+
+  /* Privacy note */
+  .privacy-note { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.5rem; margin-top: 2rem; font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+  .privacy-note strong { color: var(--gold-lt); }
+  .privacy-note h4 { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.7rem; font-weight: 600; }
 </style>
 </head>
 <body>
 <div class="content">
 
+<!-- HEADER -->
 <div class="header">
   <div class="brand">
-    <div class="brand-mark">Portfolio</div>
+    <div class="brand-mark" id="hdr-brand-mark">Portfolio</div>
     <div class="brand-sep">|</div>
-    <div class="brand-sub">Developer · Educator · Creator</div>
+    <div class="brand-sub" id="hdr-brand-sub">Developer · Educator · Creator</div>
   </div>
-  <div class="header-badge">Brand Kit</div>
+  <div class="header-right">
+    <div class="gmail-widget" id="gmail-widget">
+      <!-- Populated by JS -->
+    </div>
+    <div class="header-badge">Brand Kit</div>
+  </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('email')">✦ Email Template</div>
-  <div class="tab" onclick="switchTab('linkedin')">✦ LinkedIn Post</div>
+  <div class="tab" data-tab="brand" onclick="switchTab('brand')">⚙ Brand Profile</div>
+  <div class="tab active" data-tab="email" onclick="switchTab('email')">✦ Email Template</div>
+  <div class="tab" data-tab="linkedin" onclick="switchTab('linkedin')">✦ LinkedIn Post</div>
+</div>
+
+<!-- BRAND PROFILE PANEL -->
+<div id="panel-brand" class="panel">
+  <div class="two-col">
+    <div>
+      <div class="section-label">Your Brand Identity</div>
+      <div class="card">
+        <div class="card-title">Presets</div>
+        <div class="preset-row">
+          <button class="btn-preset" id="preset-shaan" onclick="applyPreset('shaan')">✦ Shaan (demo)</button>
+          <button class="btn-preset" id="preset-custom" onclick="applyPreset('custom')">✎ Custom</button>
+        </div>
+        <div class="card-title" style="margin-top:1rem">Profile Fields</div>
+        <label>Display Name</label>
+        <input id="bp-name" type="text" placeholder="e.g. Shaan Wocker" oninput="updateBrandField('name',this.value)"/>
+        <label>Tagline / Role Line</label>
+        <input id="bp-tagline" type="text" placeholder="e.g. Developer · Educator · Creator" oninput="updateBrandField('tagline',this.value)"/>
+        <label>Website</label>
+        <input id="bp-website" type="text" placeholder="e.g. shaanwocker.online" oninput="updateBrandField('website',this.value)"/>
+        <label>Logo Initials (2–3 chars)</label>
+        <input id="bp-initials" type="text" maxlength="3" placeholder="e.g. SW" oninput="updateBrandField('initials',this.value)"/>
+        <div class="color-row">
+          <label style="margin:0;min-width:auto">Accent Colour</label>
+          <input id="bp-color" type="color" value="#c9952a" oninput="updateBrandField('accentColor',this.value)"/>
+          <span class="color-hex" id="bp-color-hex">#c9952a</span>
+        </div>
+        <div style="margin-top:1.4rem;font-size:0.75rem;color:var(--muted);">✓ Saved automatically to your browser</div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">Preview</div>
+      <div class="brand-mini-preview">
+        <div class="bmp-label">Email header</div>
+        <div class="bmp-header">
+          <div class="bmp-logo" id="bmp-logo">SW</div>
+          <div>
+            <div class="bmp-name" id="bmp-name">Shaan Wocker</div>
+            <div class="bmp-tag" id="bmp-tag">Developer · Educator · Creator</div>
+          </div>
+        </div>
+        <div class="bmp-label" style="margin-top:1.2rem">LinkedIn post</div>
+        <div class="bmp-li">
+          <div class="bmp-avatar" id="bmp-avatar">SW</div>
+          <div>
+            <div class="bmp-li-name" id="bmp-li-name">Shaan Wocker</div>
+            <div class="bmp-li-tag" id="bmp-li-tag">Developer · Educator · Creator</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="privacy-note" style="margin-top:1.5rem">
+        <h4>🔒 How It Works &amp; Privacy</h4>
+        <p><strong>Brand Profile</strong> — Your name, tagline, website, and accent colour are stored only in your browser's local storage. Nothing is sent to any server.</p>
+        <p style="margin-top:0.6rem"><strong>Gmail Integration</strong> — When you connect Gmail, this app requests only the <em>gmail.compose</em> permission, which lets it create email drafts in your Gmail account. It cannot read your existing emails, access your contacts, or send any email automatically. Every draft is created in your Drafts folder — you review and send it yourself.</p>
+        <p style="margin-top:0.6rem"><strong>Tokens</strong> — OAuth tokens are stored in secure, server-side httpOnly cookies. They are never exposed to JavaScript or stored in localStorage.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- EMAIL PANEL -->
@@ -182,7 +305,6 @@
         <div class="section-label" style="margin:0">Live Preview</div>
         <div style="display:flex;align-items:center;gap:1rem">
           <span class="live-badge">Live</span>
-          <button class="btn btn-outline" onclick="copyEmail()">⎘ Copy HTML</button>
         </div>
       </div>
       <div id="email-preview-wrap">
@@ -194,10 +316,10 @@
         </div>
         <div class="ep-header-dark">
           <div class="ep-brand">
-            <div class="ep-logo-box">SW</div>
+            <div class="ep-logo-box" id="prev-logo">SW</div>
             <div>
-              <div class="ep-brand-name">Shaan Wocker</div>
-              <div class="ep-brand-tag">Developer · Educator · Creator</div>
+              <div class="ep-brand-name" id="prev-brand-name">Shaan Wocker</div>
+              <div class="ep-brand-tag" id="prev-brand-tag">Developer · Educator · Creator</div>
             </div>
           </div>
           <div class="ep-issue-label" id="prev-issue">Issue #01 · Weekly Notes</div>
@@ -215,13 +337,26 @@
         </div>
         <div class="ep-footer-dark">
           <div>
-            <div class="ep-footer-name">Shaan Wocker</div>
-            <div class="ep-footer-site">shaanwocker.online</div>
+            <div class="ep-footer-name" id="prev-footer-name">Shaan Wocker</div>
+            <div class="ep-footer-site" id="prev-footer-site">shaanwocker.online</div>
           </div>
           <div class="ep-footer-links">
             <a href="#">Unsubscribe</a><a href="#">View in browser</a>
           </div>
         </div>
+      </div>
+
+      <!-- Export options -->
+      <div class="export-row">
+        <button class="btn btn-outline" onclick="copyEmailHTML()">⎘ Copy Email HTML</button>
+        <button class="btn btn-outline" onclick="copyEmailPlainText()">⎘ Copy Plain Text</button>
+      </div>
+
+      <!-- Gmail draft section -->
+      <div class="gmail-draft-section">
+        <div class="gmail-draft-label">✉ Gmail Draft</div>
+        <div id="gmail-draft-ui"><!-- Populated by JS --></div>
+        <div id="gmail-draft-status"></div>
       </div>
     </div>
   </div>
@@ -251,7 +386,8 @@ It took 2 hours to build — and it's already opening new conversations</textare
         <input id="li-cta" type="text" value="Drop a 🔥 if you want to see the full template."/>
         <button class="btn btn-gold" onclick="generatePost()">✦ Generate Post</button>
       </div>
-      <div class="tip"><strong>Screenshot tip —</strong> Once happy with your email template, screenshot the preview (Mac: <code>Cmd+Shift+4</code> · Windows: <code>Win+Shift+S</code>) then attach it as an image on LinkedIn — visual posts get significantly more reach.</div>
+      <div class="tip"><strong>Post Type matters —</strong> Each type uses a different structure. <em>Behind the scenes</em> shows your process. <em>Tip / Tutorial</em> gives numbered steps. <em>Personal story</em> tells your journey. <em>Resource share</em> delivers value upfront.</div>
+      <div class="tip" style="margin-top:0.8rem"><strong>Screenshot tip —</strong> Once happy with your email template, screenshot the preview (Mac: <code>Cmd+Shift+4</code> · Windows: <code>Win+Shift+S</code>) then attach it as an image on LinkedIn — visual posts get significantly more reach.</div>
     </div>
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem">
@@ -261,10 +397,10 @@ It took 2 hours to build — and it's already opening new conversations</textare
       <div class="li-wrap">
         <div class="li-post">
           <div class="li-header">
-            <div class="li-avatar">SW</div>
+            <div class="li-avatar" id="li-avatar">SW</div>
             <div>
-              <div class="li-name">Shaan Wocker</div>
-              <div class="li-title">Developer • Educator • Creator</div>
+              <div class="li-name" id="li-name">Shaan Wocker</div>
+              <div class="li-title" id="li-title">Developer • Educator • Creator</div>
               <div class="li-time">Just now · 🌐</div>
             </div>
           </div>
@@ -286,28 +422,242 @@ It took 2 hours to build — and it's already opening new conversations</textare
   </div>
 </div>
 
-</div>
+</div><!-- .content -->
+
 <script>
+/* ============================================================
+   BRAND PROFILE
+   ============================================================ */
+const PRESETS = {
+  shaan: {
+    name: 'Shaan Wocker',
+    tagline: 'Developer · Educator · Creator',
+    website: 'shaanwocker.online',
+    initials: 'SW',
+    accentColor: '#c9952a'
+  },
+  custom: {
+    name: '',
+    tagline: '',
+    website: '',
+    initials: '',
+    accentColor: '#c9952a'
+  }
+};
+
+let brand = {};
+
+function loadBrand() {
+  try {
+    const saved = localStorage.getItem('brandProfile');
+    brand = saved ? JSON.parse(saved) : { ...PRESETS.shaan };
+  } catch (err) {
+    console.warn('Could not load saved brand profile from localStorage:', err.message);
+    brand = { ...PRESETS.shaan };
+  }
+  applyBrand();
+  syncPresetButtons();
+}
+
+function saveBrand() {
+  try { localStorage.setItem('brandProfile', JSON.stringify(brand)); } catch (_) {}
+}
+
+function lightenHex(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, (n >> 16) + amt);
+  const g = Math.min(255, ((n >> 8) & 0xff) + amt);
+  const b = Math.min(255, (n & 0xff) + amt);
+  return '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+
+function applyBrand() {
+  const gold  = brand.accentColor || '#c9952a';
+  const gold2 = lightenHex(gold, 30);
+  document.documentElement.style.setProperty('--gold',  gold);
+  document.documentElement.style.setProperty('--gold2', gold2);
+  document.documentElement.style.setProperty('--gold-lt', lightenHex(gold, 50));
+
+  // Header
+  const hdrMark = document.getElementById('hdr-brand-mark');
+  const hdrSub  = document.getElementById('hdr-brand-sub');
+  if (hdrMark) hdrMark.textContent = brand.name  || 'Brand Kit';
+  if (hdrSub)  hdrSub.textContent  = brand.tagline || '';
+
+  // Page title
+  document.title = (brand.name ? brand.name + ' – ' : '') + 'Brand Kit';
+
+  // Email preview brand
+  setText('prev-logo',        brand.initials || '?');
+  setText('prev-brand-name',  brand.name     || 'Your Name');
+  setText('prev-brand-tag',   brand.tagline  || '');
+  setText('prev-footer-name', brand.name     || 'Your Name');
+  setText('prev-footer-site', brand.website  || '');
+
+  // LinkedIn preview brand
+  setText('li-avatar', brand.initials || '?');
+  setText('li-name',   brand.name     || 'Your Name');
+  setText('li-title',  brand.tagline  || '');
+
+  // Brand profile form
+  setVal('bp-name',     brand.name        || '');
+  setVal('bp-tagline',  brand.tagline     || '');
+  setVal('bp-website',  brand.website     || '');
+  setVal('bp-initials', brand.initials    || '');
+  setVal('bp-color',    brand.accentColor || '#c9952a');
+  setText('bp-color-hex', brand.accentColor || '#c9952a');
+
+  // Mini preview
+  setText('bmp-logo',    brand.initials || '?');
+  setText('bmp-name',    brand.name     || 'Your Name');
+  setText('bmp-tag',     brand.tagline  || '');
+  setText('bmp-avatar',  brand.initials || '?');
+  setText('bmp-li-name', brand.name     || 'Your Name');
+  setText('bmp-li-tag',  brand.tagline  || '');
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+
+function updateBrandField(field, value) {
+  brand[field] = value;
+  applyBrand();
+  saveBrand();
+  syncPresetButtons();
+}
+
+function applyPreset(key) {
+  brand = { ...PRESETS[key] };
+  applyBrand();
+  saveBrand();
+  syncPresetButtons();
+}
+
+function syncPresetButtons() {
+  const isShaan =
+    brand.name      === PRESETS.shaan.name &&
+    brand.tagline   === PRESETS.shaan.tagline &&
+    brand.website   === PRESETS.shaan.website &&
+    brand.initials  === PRESETS.shaan.initials &&
+    brand.accentColor === PRESETS.shaan.accentColor;
+  document.getElementById('preset-shaan').classList.toggle('active', isShaan);
+  document.getElementById('preset-custom').classList.toggle('active', !isShaan);
+}
+
+/* ============================================================
+   TAB SWITCHING
+   ============================================================ */
 function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['email','linkedin'][i]===tab));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
 }
+
+/* ============================================================
+   EMAIL PREVIEW UPDATE
+   ============================================================ */
 function updateEmail() {
-  document.getElementById('prev-subject').textContent  = document.getElementById('ep-subject').value;
-  document.getElementById('prev-greeting').textContent = document.getElementById('ep-greeting').value;
-  document.getElementById('prev-body').textContent     = document.getElementById('ep-body').value;
-  document.getElementById('prev-cta').textContent      = document.getElementById('ep-cta').value;
-  document.getElementById('prev-issue').textContent    = document.getElementById('ep-issue').value;
-  const tags = document.getElementById('ep-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
-  document.getElementById('prev-tags').innerHTML = tags.map(t=>`<span class="ep-tag">${t}</span>`).join('');
+  setText('prev-subject',  document.getElementById('ep-subject').value);
+  setText('prev-greeting', document.getElementById('ep-greeting').value);
+  setText('prev-body',     document.getElementById('ep-body').value);
+  setText('prev-cta',      document.getElementById('ep-cta').value);
+  setText('prev-issue',    document.getElementById('ep-issue').value);
+  const tags = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  document.getElementById('prev-tags').innerHTML =
+    tags.map(t => `<span class="ep-tag">${escHtml(t)}</span>`).join('');
 }
+
+/* ============================================================
+   LINKEDIN POST GENERATION
+   ============================================================ */
 function generatePost() {
   const hook   = document.getElementById('li-hook').value.trim();
+  const type   = document.getElementById('li-type').value;
   const points = document.getElementById('li-points').value.trim().split('\n').filter(Boolean);
   const cta    = document.getElementById('li-cta').value.trim();
-  const bullets = points.map(p=>`✦ ${p}`).join('\n');
-  const post =
+  const bullets = points.map(p => `✦ ${p}`).join('\n');
+
+  let post = '';
+  switch (type) {
+    case 'Behind the scenes':
+      post =
+`${hook}
+
+Here's a behind-the-scenes look at how I built this:
+
+${bullets}
+
+Most people skip these steps — and then wonder why their brand doesn't feel consistent.
+
+Consistency isn't a strategy. It's a commitment to showing up the same way, every time.
+
+${cta}
+
+#BuildInPublic #BehindTheScenes #PersonalBrand #Creator`;
+      break;
+
+    case 'Tip / Tutorial':
+      post =
+`${hook}
+
+Here's how to do it in ${points.length} step${points.length === 1 ? '' : 's'}:
+
+${points.map((p, i) => `${i + 1}. ${p}`).join('\n')}
+
+Bookmark this for later — you'll want to come back to it.
+
+Which step are you working on right now? Drop it in the comments 👇
+
+${cta}
+
+#Tips #HowTo #PersonalBrand #Developer #Creator`;
+      break;
+
+    case 'Personal story':
+      post =
+`${hook}
+
+Here's what that journey taught me:
+
+${bullets}
+
+I didn't have all the answers at the start.
+But I had a clear intention — and that made all the difference.
+
+If you're just starting out: your consistency compounds faster than you think.
+
+${cta}
+
+#PersonalStory #Growth #Creator #BuildInPublic`;
+      break;
+
+    case 'Resource share':
+      post =
+`${hook}
+
+Why this matters:
+
+${bullets}
+
+Most people overlook resources like this — until they need them.
+Don't be most people.
+
+Save this post and come back to it when you're ready to level up.
+
+${cta}
+
+#Resources #FreeTools #PersonalBrand #Developer #Creator`;
+      break;
+
+    default:
+      post =
 `${hook}
 
 Here's what building it taught me:
@@ -323,18 +673,335 @@ start with consistency. Get that right, then scale.
 ${cta}
 
 #PersonalBrand #Developer #Creator #EmailMarketing #BuildInPublic #Educator`;
+  }
+
   document.getElementById('li-preview').textContent = post;
   document.getElementById('li-output').textContent  = post;
 }
-function copyEmail() {
-  navigator.clipboard.writeText(document.getElementById('email-preview-wrap').innerHTML)
-    .then(()=>alert('✓ Email HTML copied!'));
+
+/* ============================================================
+   EMAIL-SAFE HTML GENERATION
+   ============================================================ */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
+
+function generateEmailSafeHTML() {
+  const subject = document.getElementById('ep-subject').value;
+  const greeting = document.getElementById('ep-greeting').value;
+  const body    = document.getElementById('ep-body').value;
+  const cta     = document.getElementById('ep-cta').value;
+  const tags    = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  const issue   = document.getElementById('ep-issue').value;
+
+  const accent  = brand.accentColor || '#c9952a';
+  const name    = brand.name     || 'Your Name';
+  const initials= brand.initials || '?';
+  const tagline = brand.tagline  || '';
+  const website = brand.website  || '';
+
+  const tagsHTML = tags.map(t =>
+    `<span style="display:inline-block;background:#faf6ed;color:#a07820;border:1px solid #e8d9b0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0 4px 4px 0;">${escHtml(t)}</span>`
+  ).join('');
+
+  const bodyLines = escHtml(body).replace(/\n/g, '<br>');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>${escHtml(subject)}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f4;">
+  <tr>
+    <td align="center" style="padding:20px 10px;">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+        <!-- HEADER -->
+        <tr>
+          <td style="background-color:#080808;padding:24px 32px;border-bottom:1px solid #1e1a10;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td>
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="width:38px;height:38px;border:1px solid rgba(201,149,42,0.5);border-radius:6px;text-align:center;vertical-align:middle;font-family:Georgia,'Times New Roman',serif;font-weight:bold;color:${escHtml(accent)};font-size:14px;background-color:#080808;">
+                        ${escHtml(initials)}
+                      </td>
+                      <td style="padding-left:12px;vertical-align:middle;">
+                        <div style="font-family:Georgia,'Times New Roman',serif;color:${escHtml(accent)};font-size:15px;font-weight:bold;line-height:1.3;">${escHtml(name)}</div>
+                        <div style="font-size:11px;color:#666666;letter-spacing:1px;text-transform:uppercase;line-height:1.3;">${escHtml(tagline)}</div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td align="right" style="font-size:11px;color:#555555;text-transform:uppercase;letter-spacing:1px;vertical-align:middle;">${escHtml(issue)}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- ACCENT STRIPE -->
+        <tr>
+          <td style="height:3px;background-color:${escHtml(accent)};font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+        <!-- BODY -->
+        <tr>
+          <td style="background-color:#ffffff;padding:32px 36px;">
+            <p style="font-size:14px;color:#777777;margin:0 0 16px 0;font-family:Arial,Helvetica,sans-serif;">${escHtml(greeting)}</p>
+            <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:900;color:#0e0e0e;margin:0 0 20px 0;line-height:1.2;">${escHtml(subject)}</h1>
+            <p style="font-size:14px;color:#555555;line-height:1.8;margin:0 0 28px 0;font-family:Arial,Helvetica,sans-serif;">${bodyLines}</p>
+            <table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px 0;">
+              <tr>
+                <td style="border-radius:30px;background-color:#080808;border:1px solid rgba(201,149,42,0.5);">
+                  <a href="#" style="display:inline-block;padding:12px 28px;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${escHtml(accent)};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${escHtml(cta)}</a>
+                </td>
+              </tr>
+            </table>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
+              <tr><td style="border-top:1px solid #eeebe3;height:1px;font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+            <p style="margin:0;">${tagsHTML}</p>
+          </td>
+        </tr>
+        <!-- FOOTER -->
+        <tr>
+          <td style="background-color:#080808;padding:20px 32px;border-top:1px solid #1e1a10;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td>
+                  <div style="font-family:Georgia,'Times New Roman',serif;color:${escHtml(accent)};font-size:14px;font-weight:bold;">${escHtml(name)}</div>
+                  ${website ? `<div style="font-size:11px;color:#555555;margin-top:2px;font-family:Arial,Helvetica,sans-serif;">${escHtml(website)}</div>` : ''}
+                </td>
+                <td align="right">
+                  <a href="#" style="color:${escHtml(accent)};font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Unsubscribe</a>
+                  <span style="color:#333333;margin:0 6px;">·</span>
+                  <a href="#" style="color:${escHtml(accent)};font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">View in browser</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+}
+
+function generatePlainText() {
+  const subject  = document.getElementById('ep-subject').value;
+  const greeting = document.getElementById('ep-greeting').value;
+  const body     = document.getElementById('ep-body').value;
+  const cta      = document.getElementById('ep-cta').value;
+  const tags     = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  const issue    = document.getElementById('ep-issue').value;
+  const name     = brand.name    || 'Your Name';
+  const website  = brand.website || '';
+
+  return [
+    issue,
+    '━'.repeat(38),
+    '',
+    greeting,
+    '',
+    subject,
+    '',
+    body,
+    '',
+    cta,
+    '',
+    '━'.repeat(38),
+    tags.length ? 'Tags: ' + tags.join(' · ') : '',
+    '',
+    name,
+    website,
+    '',
+    'To unsubscribe, reply with "unsubscribe" in the subject line.'
+  ].filter(l => l !== null).join('\n');
+}
+
+/* ============================================================
+   COPY HELPERS
+   ============================================================ */
+function copyEmailHTML() {
+  const html = generateEmailSafeHTML();
+  navigator.clipboard.writeText(html)
+    .then(() => showToast('✓ Email-safe HTML copied — paste into your email platform!'))
+    .catch(() => showToast('⚠ Copy failed — please use Ctrl+C manually.', true));
+}
+
+function copyEmailPlainText() {
+  const txt = generatePlainText();
+  navigator.clipboard.writeText(txt)
+    .then(() => showToast('✓ Plain text copied!'))
+    .catch(() => showToast('⚠ Copy failed.', true));
+}
+
 function copyPost() {
   const t = document.getElementById('li-output').textContent;
-  if(t==='Your generated post will appear here...'){alert('Generate a post first!');return;}
-  navigator.clipboard.writeText(t).then(()=>alert('✓ LinkedIn post copied!'));
+  if (t === 'Your generated post will appear here...') {
+    showToast('Generate a post first!', true);
+    return;
+  }
+  navigator.clipboard.writeText(t)
+    .then(() => showToast('✓ LinkedIn post copied!'))
+    .catch(() => showToast('⚠ Copy failed.', true));
 }
+
+function showToast(msg, isError) {
+  // Reuse the export area or create a transient element
+  const el = document.createElement('div');
+  el.className = 'status-msg ' + (isError ? 'status-error' : 'status-success');
+  el.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;max-width:360px;';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+/* ============================================================
+   GMAIL OAUTH INTEGRATION
+   ============================================================ */
+let gmailState = { connected: false, email: '', name: '' };
+
+async function checkGmailStatus() {
+  try {
+    const res = await fetch('/api/auth/status');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    gmailState = data;
+  } catch (_) {
+    gmailState = { connected: false };
+  }
+  renderGmailWidget();
+  renderGmailDraftUI();
+}
+
+function renderGmailWidget() {
+  const w = document.getElementById('gmail-widget');
+  if (!w) return;
+  if (gmailState.connected) {
+    w.innerHTML = `
+      <div class="gmail-widget">
+        <span class="gmail-connected">✓ Gmail</span>
+        <span class="gmail-email" aria-label="Connected Gmail account">${escHtml(gmailState.email || '')}</span>
+        <button class="btn-gmail btn-gmail-disconnect" onclick="disconnectGmail()">Disconnect</button>
+      </div>`;
+  } else {
+    w.innerHTML = `
+      <button class="btn-gmail" onclick="connectGmail()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Connect Gmail
+      </button>`;
+  }
+}
+
+function renderGmailDraftUI() {
+  const el = document.getElementById('gmail-draft-ui');
+  if (!el) return;
+  if (gmailState.connected) {
+    el.innerHTML = `
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem;">
+        Connected as <strong style="color:var(--gold-lt)">${escHtml(gmailState.email || '')}</strong>.
+        A draft will be created in your Gmail Drafts folder — you review it before sending.
+      </div>
+      <button class="btn btn-draft" id="btn-create-draft" onclick="createGmailDraft()" style="margin-top:0">
+        ✉ Create Gmail Draft
+      </button>`;
+  } else {
+    el.innerHTML = `
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem;">
+        Connect your Gmail account to create a draft directly in your inbox.
+      </div>
+      <button class="btn-gmail" onclick="connectGmail()">
+        Connect Gmail
+      </button>
+      <div style="font-size:0.7rem;color:var(--muted);margin-top:0.6rem;">
+        Requires deployment to Vercel with Google OAuth configured.
+      </div>`;
+  }
+}
+
+function connectGmail() {
+  window.location.href = '/api/auth/google';
+}
+
+async function disconnectGmail() {
+  try {
+    await fetch('/api/auth/disconnect', { method: 'POST' });
+  } catch (_) {}
+  gmailState = { connected: false };
+  renderGmailWidget();
+  renderGmailDraftUI();
+}
+
+async function createGmailDraft() {
+  const btn = document.getElementById('btn-create-draft');
+  const statusEl = document.getElementById('gmail-draft-status');
+  if (btn) btn.disabled = true;
+  if (statusEl) {
+    statusEl.innerHTML = '<div class="status-msg status-info">Creating draft…</div>';
+  }
+
+  const subject = document.getElementById('ep-subject').value;
+  const html    = generateEmailSafeHTML();
+
+  try {
+    const res = await fetch('/api/gmail/draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, html })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Failed to create draft');
+    }
+    if (statusEl) {
+      statusEl.innerHTML = `<div class="status-msg status-success">
+        ✓ Draft created! Open <a href="https://mail.google.com/mail/u/0/#drafts" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">Gmail Drafts</a> to review and send it.
+      </div>`;
+    }
+  } catch (err) {
+    if (statusEl) {
+      statusEl.innerHTML = `<div class="status-msg status-error">⚠ ${escHtml(err.message)}. Try reconnecting Gmail.</div>`;
+    }
+    if (err.message && err.message.includes('authenticated')) {
+      gmailState = { connected: false };
+      renderGmailWidget();
+      renderGmailDraftUI();
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+/* ============================================================
+   HANDLE OAUTH REDIRECT PARAMS
+   ============================================================ */
+function handleRedirectParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('connected')) {
+    showToast('✓ Gmail connected successfully!');
+    history.replaceState({}, '', window.location.pathname);
+  }
+  if (params.has('error')) {
+    showToast('⚠ Gmail connection failed: ' + params.get('error'), true);
+    history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+loadBrand();
+handleRedirectParams();
+checkGmailStatus();
 </script>
 </body>
 </html>

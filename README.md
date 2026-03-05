@@ -3,17 +3,16 @@
 ```
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║        ✦  S H A A N   W O C K E R  ✦                   ║
-║           Developer · Educator · Creator                 ║
+║              ✦  B R A N D   K I T  ✦                    ║
+║     Email · LinkedIn · Gmail — personalised for you      ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
 # Brand Kit — Email Template & LinkedIn Post Builder
 
-**A personalised, on-brand toolkit for professionals who care about every touchpoint.**
+**A multi-user, personalised toolkit for professionals who care about every touchpoint.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-shaanwocker.online-C9952A?style=for-the-badge&logo=vercel&logoColor=white)](https://shaanwocker.online)
 [![Deploy with Vercel](https://img.shields.io/badge/Deploy%20with-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/new)
 [![License](https://img.shields.io/badge/License-MIT-C9952A?style=for-the-badge)](LICENSE)
 
@@ -25,37 +24,15 @@
 
 Most professionals spend hours perfecting their LinkedIn presence and website — then send emails that look like everyone else's.
 
-This **Brand Kit** solves that. It's a single-file, zero-dependency web tool that lets you:
+This **Brand Kit** solves that. It lets you:
 
-- 🎨 **Design a personalised email template** — live preview, fully editable, matches your brand
-- 💼 **Generate ready-to-post LinkedIn captions** — 6 angles, professional hooks, built-in CTAs
-- 📋 **Copy everything in one click** — HTML for your email platform, text for LinkedIn
+- 🎨 **Configure your own Brand Profile** — name, tagline, website, initials, accent colour, persisted in your browser
+- 📧 **Design a personalised email template** — live preview, export as email-safe HTML or plain text
+- ✉ **Create Gmail Drafts with one click** — OAuth 2.0 integration via Vercel serverless functions
+- 💼 **Generate ready-to-post LinkedIn captions** — four structured post types that change the scaffold
+- 📋 **Copy everything in one click** — email-safe HTML for your email platform, plain text for LinkedIn
 
-Built with the black-and-gold aesthetic of [shaanwocker.online](https://shaanwocker.online) — *Developer. Educator. Creator.*
-
----
-
-## ✦ Preview
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  Portfolio  |  Developer · Educator · Creator  [ Brand Kit ] │
-├─────────────────────────────────────────────────────────┤
-│  ✦ Email Template    ✦ LinkedIn Post                    │
-├───────────────────────┬─────────────────────────────────┤
-│                       │  ┌─────────────────────────┐   │
-│  Customise Your       │  │ ●  ●  ●  Inbox Preview  │   │
-│  Template             │  ├─────────────────────────┤   │
-│                       │  │ ██  Shaan Wocker         │   │
-│  Subject Line ______  │  │     Dev · Edu · Creator  │   │
-│  Greeting    ______   │  ├═════════════════════════╡   │
-│  Body Text   ______   │  │                         │   │
-│  CTA Button  ______   │  │  Your subject line here │   │
-│  Tags        ______   │  │  Body text preview...   │   │
-│                       │  │  [ Read More → ]        │   │
-│                       │  └─────────────────────────┘   │
-└───────────────────────┴─────────────────────────────────┘
-```
+Comes with a built-in **Shaan (demo)** preset and a fully editable **Custom** preset.
 
 ---
 
@@ -63,76 +40,15 @@ Built with the black-and-gold aesthetic of [shaanwocker.online](https://shaanwoc
 
 | Feature | Description |
 |---|---|
+| 👤 **Brand Profile** | Set your name, tagline, website, initials, and accent colour — persisted to localStorage |
+| ✦ Shaan preset | Demo values pre-filled so the tool works immediately out of the box |
 | 📧 **Live Email Preview** | See your branded template update in real time as you type |
-| 🎨 **Brand-Matched Design** | Black background, gold typography, Playfair Display serif — your identity |
-| 💼 **LinkedIn Post Generator** | Fill in your hook and key points — get a formatted, hashtag-ready post |
-| 📋 **One-Click Copy** | Copy full HTML for email platforms, or plain text for LinkedIn |
+| 📤 **Email-safe HTML Export** | Table-based, inline-styled HTML that renders correctly in Gmail, Outlook, Apple Mail |
+| ✉ **Gmail Draft** | OAuth 2.0 (PKCE) — create a draft in your own Gmail, never auto-sends |
+| 💼 **LinkedIn Post Generator** | Four post-type templates: *Behind the scenes*, *Tip/Tutorial*, *Personal story*, *Resource share* |
+| 📋 **One-Click Copy** | Email-safe HTML, plain text, LinkedIn post |
+| 🔒 **Privacy-first** | Tokens stored in httpOnly cookies; brand data stays in your browser |
 | 📱 **Responsive** | Works on desktop and mobile |
-| ⚡ **Zero Dependencies** | Pure HTML, CSS, JavaScript — no build step, no npm, no framework |
-
----
-
-## ✦ Getting Started
-
-### Option 1 — Just open it
-
-```bash
-# No install needed — just open in your browser
-open index.html
-```
-
-### Option 2 — Clone & deploy
-
-```bash
-git clone https://github.com/shaanwocker/brand-kit.git
-cd brand-kit
-```
-
-Then deploy to Vercel in one command:
-
-```bash
-npx vercel
-```
-
-Or drag the folder to [vercel.com/new](https://vercel.com/new) for instant deployment.
-
----
-
-## ✦ Deploying to Vercel
-
-This is a fully static site — no server, no backend, no configuration needed.
-
-**Drag & Drop (30 seconds)**
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Drag your project folder onto the page
-3. Get a live URL instantly — e.g. `brand-kit.vercel.app`
-
-**Via GitHub (recommended for updates)**
-1. Push this repo to GitHub
-2. Import it at [vercel.com/new](https://vercel.com/new)
-3. Every `git push` auto-deploys — no manual steps
-
-**Custom Domain**
-
-Connect `tools.shaanwocker.online` or any subdomain in Vercel:
-```
-Vercel Dashboard → Project → Settings → Domains → Add shaanwocker.online
-```
-
----
-
-## ✦ Using the Email Template
-
-Once you've customised your template, copy the HTML and paste it into your preferred email platform:
-
-| Platform | How to use |
-|---|---|
-| **Beehiiv** | New post → Switch to HTML view → Paste |
-| **Mailchimp** | Create campaign → Code your own → Paste HTML |
-| **ConvertKit** | New broadcast → HTML editor → Paste |
-| **Gmail** | Compose → Paste rendered preview → Save as Template |
-
-> 💡 The `[First Name]` token is automatically replaced by all major email platforms with each subscriber's name.
 
 ---
 
@@ -140,42 +56,156 @@ Once you've customised your template, copy the HTML and paste it into your prefe
 
 ```
 brand-kit/
-│
-└── index.html          # The entire app — one file, zero dependencies
+├── index.html              # Static frontend — brand profile, email builder, LinkedIn builder
+├── vercel.json             # Vercel configuration
+└── api/
+    ├── _utils.js           # Shared: cookie helpers, PKCE, token refresh
+    ├── auth/
+    │   ├── google.js       # GET  /api/auth/google     — start OAuth flow
+    │   ├── callback.js     # GET  /api/auth/callback   — exchange code for tokens
+    │   ├── status.js       # GET  /api/auth/status     — check connection state
+    │   └── disconnect.js   # POST /api/auth/disconnect — clear auth cookies
+    └── gmail/
+        └── draft.js        # POST /api/gmail/draft     — create Gmail draft
 ```
 
-That's it. Intentionally simple.
+---
+
+## ✦ Getting Started (static-only, no Gmail)
+
+```bash
+# Clone
+git clone https://github.com/ShaanWocker/Personal-Brand-Template-Generator.git
+cd Personal-Brand-Template-Generator
+
+# Open directly — no install needed
+open index.html
+```
+
+The **Brand Profile**, **Email Template**, and **LinkedIn Post** features work fully offline.  
+Gmail integration requires deployment to Vercel (see below).
+
+---
+
+## ✦ Deploying to Vercel with Gmail Integration
+
+### 1 — Deploy to Vercel
+
+**Via GitHub (recommended)**
+1. Push this repo to GitHub
+2. Import at [vercel.com/new](https://vercel.com/new)
+3. Every `git push` auto-deploys
+
+**CLI**
+```bash
+npx vercel
+```
+
+---
+
+### 2 — Google Cloud Console setup
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com)
+2. Create a project (or use an existing one)
+3. **Enable the Gmail API**: APIs & Services → Library → search "Gmail API" → Enable
+4. **OAuth Consent Screen**: APIs & Services → OAuth consent screen
+   - User type: **External**
+   - App name, support email, developer contact: fill in yours
+   - Scopes: add `https://www.googleapis.com/auth/gmail.compose`, `email`, `profile`
+   - Test users: add your Gmail address(es) while in development
+5. **OAuth Client**: APIs & Services → Credentials → Create Credentials → OAuth client ID
+   - Application type: **Web application**
+   - Authorised redirect URIs: add your deployed URL + `/api/auth/callback`
+     ```
+     https://your-app.vercel.app/api/auth/callback
+     ```
+   - Copy the **Client ID** and **Client Secret**
+
+---
+
+### 3 — Set Vercel environment variables
+
+In the Vercel Dashboard → Project → Settings → Environment Variables, add:
+
+| Variable | Value | Notes |
+|---|---|---|
+| `GOOGLE_CLIENT_ID` | `12345-abc.apps.googleusercontent.com` | From Google Cloud Console |
+| `GOOGLE_CLIENT_SECRET` | `GOCSPX-…` | From Google Cloud Console |
+| `GOOGLE_REDIRECT_URI` | `https://your-app.vercel.app/api/auth/callback` | Must match the URI in Google Console |
+| `APP_URL` | `https://your-app.vercel.app` | No trailing slash |
+| `NODE_ENV` | `production` | Enables Secure flag on cookies |
+
+> ⚠️ **Never commit secrets to source control.** These values live only in Vercel's environment.
+
+---
+
+### 4 — Redeploy
+
+After setting env vars, trigger a redeploy (push a commit or use the Vercel dashboard "Redeploy" button).
+
+---
+
+## ✦ Using the Email Template
+
+Once you've customised your template, you have three export options:
+
+| Option | How to use |
+|---|---|
+| **Copy Email HTML** | Email-safe, table-based HTML — paste into Beehiiv, Mailchimp, ConvertKit, etc. |
+| **Copy Plain Text** | Clean text version for platforms that prefer it |
+| **Create Gmail Draft** | Requires Gmail connected — creates a draft in your Gmail Drafts folder |
+
+> 💡 The `[First Name]` token is automatically replaced by major email platforms with each subscriber's name.
+
+### Platform-specific paste instructions
+
+| Platform | Steps |
+|---|---|
+| **Beehiiv** | New post → HTML view → Paste |
+| **Mailchimp** | Create campaign → Code your own → Paste HTML |
+| **ConvertKit** | New broadcast → HTML editor → Paste |
+| **Gmail draft** | Use the built-in "Create Gmail Draft" button |
+
+---
+
+## ✦ Gmail Integration — Privacy & Security
+
+- **Permission requested**: `gmail.compose` only — this allows creating drafts. The app **cannot** read your emails, access your contacts, or send email automatically.
+- **No auto-send**: Every draft lands in your Gmail Drafts folder. You review and send it yourself.
+- **Token storage**: OAuth tokens are stored in server-side `httpOnly` cookies. They are never exposed to JavaScript or `localStorage`.
+- **Revocation**: Click **Disconnect** at any time to clear your session. You can also revoke access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions).
+
+---
+
+## ✦ Email HTML Rendering Caveats
+
+The exported email HTML uses:
+- **Table-based layout** — works in Outlook, Gmail, Apple Mail, Yahoo
+- **System fonts** — `Georgia`, `Arial`, `Helvetica` (no external font links)
+- **Inline styles** — no `<style>` blocks, maximum compatibility
+- **Quoted-printable encoding** for the Gmail draft MIME message
+
+Known limitations:
+- Gradient accent stripe may not render in Outlook (shows solid colour fallback)
+- Border-radius on buttons may be ignored by older Outlook versions
+- Always test in [Litmus](https://litmus.com) or [Email on Acid](https://www.emailonacid.com) before a production send
 
 ---
 
 ## ✦ Customisation
 
-All brand tokens are CSS variables at the top of the file — change them to match any brand:
+Brand tokens are CSS custom properties that update live as you change your Brand Profile. The accent colour propagates to all preview elements automatically.
+
+To change the default theme palette, edit `:root` in `index.html`:
 
 ```css
 :root {
   --black:  #080808;   /* Background */
-  --gold:   #c9952a;   /* Primary accent */
+  --gold:   #c9952a;   /* Primary accent (overridden by brand profile) */
   --gold2:  #e8b84b;   /* Secondary accent */
   --white:  #f0ece4;   /* Body text */
-  --serif:  'Playfair Display', serif;
-  --body:   'Jost', sans-serif;
 }
 ```
-
----
-
-## ✦ The Service
-
-This tool is also the foundation of a **done-for-you service** — I build custom branded email templates for professionals and creators.
-
-**What you get:**
-- Custom HTML email template matched to your personal brand
-- Delivered within 48 hours
-- Works with any major email platform
-- Includes a free showcase sample before you commit
-
-**Interested?** → [shaanwocker.online](https://shaanwocker.online) · Connect on [LinkedIn](https://linkedin.com/in/shaanwocker)
 
 ---
 

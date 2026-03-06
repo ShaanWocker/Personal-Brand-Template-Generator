@@ -365,8 +365,8 @@
         </div>
         <label>Inline Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional, max 8 MB)</span></label>
         <input id="ep-image" type="url" placeholder="https://example.com/image.jpg" oninput="updateEmail()"/>
-        <label>Video URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional — links poster image to your video)</span></label>
-        <input id="ep-video-url" type="url" placeholder="https://youtube.com/watch?v=…" oninput="updateEmail()"/>
+        <label>Video Slug <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional — generates a watch URL that links the poster image to your video)</span></label>
+        <input id="ep-video-slug" type="text" placeholder="e.g. my-launch-video" oninput="updateEmail()"/>
         <label>Video Poster Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional, max 8 MB — embedded as clickable thumbnail)</span></label>
         <input id="ep-video-poster" type="url" placeholder="https://example.com/poster.jpg" oninput="updateEmail()"/>
         <label>Tags (comma-separated)</label>
@@ -374,7 +374,7 @@
         <label>Issue / Edition Label</label>
         <input id="ep-issue" type="text" value="Issue #01 · Weekly Notes" oninput="updateEmail()"/>
       </div>
-      <div class="tip"><strong>Pro tip —</strong> Keep your subject line under 50 characters for best open rates. Use <code>[First Name]</code> as your personalisation token — Beehiiv, ConvertKit, and Mailchimp will auto-replace it. Toggle the <strong>CTA Button</strong> off if your email doesn't need a call-to-action. Add an <strong>Inline Image URL</strong> to embed an image directly in your email body (max 8 MB). Add a <strong>Video URL</strong> and <strong>Video Poster Image URL</strong> to embed a clickable thumbnail that links to your video — video cannot play inline in email clients, so a poster image is used instead.</div>
+      <div class="tip"><strong>Pro tip —</strong> Keep your subject line under 50 characters for best open rates. Use <code>[First Name]</code> as your personalisation token — Beehiiv, ConvertKit, and Mailchimp will auto-replace it. Toggle the <strong>CTA Button</strong> off if your email doesn't need a call-to-action. Add an <strong>Inline Image URL</strong> to embed an image directly in your email body (max 8 MB). Add a <strong>Video Slug</strong> and <strong>Video Poster Image URL</strong> to embed a clickable thumbnail that links to your watch page — video cannot play inline in email clients, so a poster image is used instead. Watch pages live at <code>/watch/&lt;slug&gt;</code> and map slugs to Vimeo videos via <code>watch-map.json</code>.</div>
     </div>
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem">
@@ -677,7 +677,10 @@ function updateEmail() {
   }
 
   // Video poster image
-  const videoUrl    = (document.getElementById('ep-video-url').value || '').trim();
+  const videoSlug   = (document.getElementById('ep-video-slug').value || '').trim();
+  const videoUrl    = videoSlug
+    ? 'https://brand-kit.shaanwocker.online/watch/' + encodeURIComponent(videoSlug)
+    : '';
   const posterUrl   = (document.getElementById('ep-video-poster').value || '').trim();
   const videoWrap   = document.getElementById('prev-video-wrap');
   const videoLink   = document.getElementById('prev-video-link');
@@ -864,7 +867,10 @@ function generateEmailSafeHTML() {
   const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta     = document.getElementById('ep-cta').value;
   const imgUrl  = (document.getElementById('ep-image').value || '').trim();
-  const videoUrl    = (document.getElementById('ep-video-url').value || '').trim();
+  const videoSlug   = (document.getElementById('ep-video-slug').value || '').trim();
+  const videoUrl    = videoSlug
+    ? 'https://brand-kit.shaanwocker.online/watch/' + encodeURIComponent(videoSlug)
+    : '';
   const videoPosterUrl = (document.getElementById('ep-video-poster').value || '').trim();
   const tags    = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
   const issue   = document.getElementById('ep-issue').value;
@@ -989,7 +995,10 @@ function generatePlainText() {
   const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta        = document.getElementById('ep-cta').value;
   const imgUrl     = (document.getElementById('ep-image').value || '').trim();
-  const videoUrl   = (document.getElementById('ep-video-url').value || '').trim();
+  const videoSlug  = (document.getElementById('ep-video-slug').value || '').trim();
+  const videoUrl   = videoSlug
+    ? 'https://brand-kit.shaanwocker.online/watch/' + encodeURIComponent(videoSlug)
+    : '';
   const tags       = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
   const issue      = document.getElementById('ep-issue').value;
   const name       = brand.name    || 'Your Name';
@@ -1146,7 +1155,10 @@ async function createGmailDraft() {
   const subject       = document.getElementById('ep-subject').value;
   const html          = generateEmailSafeHTML();
   const imageUrl      = (document.getElementById('ep-image').value || '').trim();
-  const videoUrl      = (document.getElementById('ep-video-url').value || '').trim();
+  const videoSlug     = (document.getElementById('ep-video-slug').value || '').trim();
+  const videoUrl      = videoSlug
+    ? 'https://brand-kit.shaanwocker.online/watch/' + encodeURIComponent(videoSlug)
+    : '';
   const videoPosterUrl = (document.getElementById('ep-video-poster').value || '').trim();
 
   try {

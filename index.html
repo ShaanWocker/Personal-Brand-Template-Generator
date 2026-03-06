@@ -233,6 +233,26 @@
   .privacy-note { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.5rem; margin-top: 2rem; font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
   .privacy-note strong { color: var(--gold-lt); }
   .privacy-note h4 { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.7rem; font-weight: 600; }
+
+  /* Toggle switch */
+  .toggle-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.1rem; }
+  .toggle-label-text { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 500; cursor: pointer; }
+  .toggle-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #1a1a1a; border-radius: 20px; transition: 0.2s; border: 1px solid var(--border); }
+  .toggle-slider:before { position: absolute; content: ''; height: 14px; width: 14px; left: 2px; bottom: 2px; background: var(--muted); border-radius: 50%; transition: 0.2s; }
+  .toggle-switch input:checked + .toggle-slider { background: rgba(201,149,42,0.18); border-color: var(--gold); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(16px); background: var(--gold); }
+
+  /* Email inline image */
+  .ep-inline-img { width: 100%; border-radius: 8px; margin-bottom: 1.6rem; display: block; max-height: 280px; object-fit: cover; }
+
+  /* Post type badge in preview */
+  .li-type-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); padding: 0.25rem 0.7rem; border-radius: 20px; font-weight: 500; transition: all 0.3s; }
+  .li-type-badge.bts   { color: #7dd3fc; border-color: rgba(125,211,252,0.35); background: rgba(125,211,252,0.06); }
+  .li-type-badge.tip   { color: #86efac; border-color: rgba(134,239,172,0.35); background: rgba(134,239,172,0.06); }
+  .li-type-badge.story { color: #f9a8d4; border-color: rgba(249,168,212,0.35); background: rgba(249,168,212,0.06); }
+  .li-type-badge.res   { color: #fbbf24; border-color: rgba(251,191,36,0.35);  background: rgba(251,191,36,0.06); }
 </style>
 </head>
 <body>
@@ -332,14 +352,25 @@
         <input id="ep-greeting" type="text" value="Hey [First Name]," oninput="updateEmail()"/>
         <label>Body Text</label>
         <textarea id="ep-body" rows="4" oninput="updateEmail()">This week I've been working on something I've wanted to share for a while — a breakdown of exactly how I structured my developer portfolio to stand out and start meaningful conversations.</textarea>
-        <label>CTA Button Text</label>
-        <input id="ep-cta" type="text" value="Read the full breakdown →" oninput="updateEmail()"/>
+        <div class="toggle-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="ep-cta-enabled" checked onchange="updateEmail()">
+            <span class="toggle-slider"></span>
+          </label>
+          <label class="toggle-label-text" for="ep-cta-enabled">CTA Button</label>
+        </div>
+        <div id="ep-cta-field">
+          <label>CTA Button Text</label>
+          <input id="ep-cta" type="text" value="Read the full breakdown →" oninput="updateEmail()"/>
+        </div>
+        <label>Inline Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input id="ep-image" type="url" placeholder="https://example.com/image.jpg" oninput="updateEmail()"/>
         <label>Tags (comma-separated)</label>
         <input id="ep-tags" type="text" value="Dev, Portfolio, Career" oninput="updateEmail()"/>
         <label>Issue / Edition Label</label>
         <input id="ep-issue" type="text" value="Issue #01 · Weekly Notes" oninput="updateEmail()"/>
       </div>
-      <div class="tip"><strong>Pro tip —</strong> Keep your subject line under 50 characters for best open rates. Use <code>[First Name]</code> as your personalisation token — Beehiiv, ConvertKit, and Mailchimp will auto-replace it.</div>
+      <div class="tip"><strong>Pro tip —</strong> Keep your subject line under 50 characters for best open rates. Use <code>[First Name]</code> as your personalisation token — Beehiiv, ConvertKit, and Mailchimp will auto-replace it. Toggle the <strong>CTA Button</strong> off if your email doesn't need a call-to-action. Add an <strong>Inline Image URL</strong> to embed a rendered image directly in your email body.</div>
     </div>
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem">
@@ -370,6 +401,7 @@
           <div class="ep-greeting" id="prev-greeting">Hey [First Name],</div>
           <div class="ep-subject" id="prev-subject">How I built a dev portfolio that actually gets replies</div>
           <div class="ep-body-text" id="prev-body">This week I've been working on something I've wanted to share for a while — a breakdown of exactly how I structured my developer portfolio to stand out and start meaningful conversations.</div>
+          <div id="prev-image-wrap" style="display:none"><img id="prev-image" src="" alt="Email content image" class="ep-inline-img" onerror="this.parentElement.style.display='none'"/></div>
           <a class="ep-cta-btn" id="prev-cta" href="#">Read the full breakdown →</a>
           <hr class="ep-divider"/>
           <div class="ep-tags" id="prev-tags">
@@ -427,13 +459,16 @@ It took 2 hours to build — and it's already opening new conversations</textare
         <input id="li-cta" type="text" value="Drop a 🔥 if you want to see the full template."/>
         <button class="btn btn-gold" onclick="generatePost()">✦ Generate Post</button>
       </div>
-      <div class="tip"><strong>Post Type matters —</strong> Each type uses a different structure. <em>Behind the scenes</em> shows your process. <em>Tip / Tutorial</em> gives numbered steps. <em>Personal story</em> tells your journey. <em>Resource share</em> delivers value upfront.</div>
+      <div class="tip"><strong>Post Type matters —</strong> Each type has a distinct structure and tone. <em>Behind the scenes</em> uses a diary-style process log with arrows. <em>Tip / Tutorial</em> opens with the common mistake, then gives a steal-worthy framework. <em>Personal story</em> leads with vulnerability and follows a before-after arc. <em>Resource share</em> leads with value using checkmarks and a save-this CTA.</div>
       <div class="tip" style="margin-top:0.8rem"><strong>Screenshot tip —</strong> Once happy with your email template, screenshot the preview (Mac: <code>Cmd+Shift+4</code> · Windows: <code>Win+Shift+S</code>) then attach it as an image on LinkedIn — visual posts get significantly more reach.</div>
     </div>
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem">
         <div class="section-label" style="margin:0">Post Preview</div>
-        <button class="btn btn-outline" onclick="copyPost()">⎘ Copy Post</button>
+        <div style="display:flex;align-items:center;gap:0.7rem">
+          <span class="li-type-badge" id="li-type-badge">Select a type</span>
+          <button class="btn btn-outline" onclick="copyPost()">⎘ Copy Post</button>
+        </div>
       </div>
       <div class="li-wrap">
         <div class="li-post">
@@ -608,8 +643,28 @@ function updateEmail() {
   setText('prev-subject',  document.getElementById('ep-subject').value);
   setText('prev-greeting', document.getElementById('ep-greeting').value);
   setText('prev-body',     document.getElementById('ep-body').value);
-  setText('prev-cta',      document.getElementById('ep-cta').value);
   setText('prev-issue',    document.getElementById('ep-issue').value);
+
+  // CTA toggle
+  const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
+  const ctaField   = document.getElementById('ep-cta-field');
+  const ctaEl      = document.getElementById('prev-cta');
+  if (ctaField) ctaField.style.display = ctaEnabled ? '' : 'none';
+  if (ctaEl)   ctaEl.style.display    = ctaEnabled ? '' : 'none';
+  if (ctaEnabled) setText('prev-cta', document.getElementById('ep-cta').value);
+
+  // Inline image
+  const imgUrl  = (document.getElementById('ep-image').value || '').trim();
+  const imgWrap = document.getElementById('prev-image-wrap');
+  const imgEl   = document.getElementById('prev-image');
+  if (imgUrl) {
+    imgEl.src = imgUrl;
+    imgWrap.style.display = '';
+  } else {
+    imgWrap.style.display = 'none';
+    imgEl.src = '';
+  }
+
   const tags = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
   document.getElementById('prev-tags').innerHTML =
     tags.map(t => `<span class="ep-tag">${escHtml(t)}</span>`).join('');
@@ -618,83 +673,128 @@ function updateEmail() {
 /* ============================================================
    LINKEDIN POST GENERATION
    ============================================================ */
+const POST_TYPE_META = {
+  'Behind the scenes': { cls: 'bts',   icon: '🔩', label: 'Behind the scenes' },
+  'Tip / Tutorial':    { cls: 'tip',   icon: '💡', label: 'Tip / Tutorial'    },
+  'Personal story':    { cls: 'story', icon: '🧵', label: 'Personal story'    },
+  'Resource share':    { cls: 'res',   icon: '📦', label: 'Resource share'    },
+};
+
+function updatePostTypeBadge(type) {
+  const badge = document.getElementById('li-type-badge');
+  if (!badge) return;
+  const meta = POST_TYPE_META[type] || {};
+  badge.textContent = (meta.icon ? meta.icon + ' ' : '') + (meta.label || type);
+  badge.className = 'li-type-badge ' + (meta.cls || '');
+}
+
 function generatePost() {
   const hook   = document.getElementById('li-hook').value.trim();
   const type   = document.getElementById('li-type').value;
   const points = document.getElementById('li-points').value.trim().split('\n').filter(Boolean);
   const cta    = document.getElementById('li-cta').value.trim();
-  const bullets = points.map(p => `✦ ${p}`).join('\n');
+
+  updatePostTypeBadge(type);
 
   let post = '';
   switch (type) {
+
+    // ── BEHIND THE SCENES ────────────────────────────────────────
+    // Diary-style process log. Arrow bullets. Raw & honest tone.
+    // Ends with an open question to invite replies.
     case 'Behind the scenes':
       post =
 `${hook}
 
-Here's a behind-the-scenes look at how I built this:
+Here's the real process — no polish, just the build log:
 
-${bullets}
+${points.map((p, i) => `→ [Day ${i + 1}] ${p}`).join('\n')}
 
-Most people skip these steps — and then wonder why their brand doesn't feel consistent.
+Most people only share the highlight reel.
+I'm sharing the working file.
 
-Consistency isn't a strategy. It's a commitment to showing up the same way, every time.
+Because the messy middle is where the real learning happens.
+
+What are you building right now? Drop it below 👇
 
 ${cta}
 
-#BuildInPublic #BehindTheScenes #PersonalBrand #Creator`;
+#BuildInPublic #BehindTheScenes #DevJourney #MakerLog #IndieHacker`;
       break;
 
+    // ── TIP / TUTORIAL ────────────────────────────────────────────
+    // Opens with the common mistake. Steal-worthy numbered framework.
+    // Ends with a save prompt and an engagement question.
     case 'Tip / Tutorial':
       post =
 `${hook}
 
-Here's how to do it in ${points.length} step${points.length === 1 ? '' : 's'}:
+❌ The mistake most people make: they skip straight to step ${points.length}.
+
+Here's the exact framework I use — steal it:
 
 ${points.map((p, i) => `${i + 1}. ${p}`).join('\n')}
 
-Bookmark this for later — you'll want to come back to it.
+Pro tip → master step 1 before touching anything else.
+The order matters more than the tools.
 
-Which step are you working on right now? Drop it in the comments 👇
+Which step trips you up most? Tell me in the comments 👇
+(Save this for when you need it 🔖)
 
 ${cta}
 
-#Tips #HowTo #PersonalBrand #Developer #Creator`;
+#DevTips #HowTo #LearnInPublic #Tutorial #100DaysOfCode`;
       break;
 
+    // ── PERSONAL STORY ───────────────────────────────────────────
+    // Vulnerability-first. Clear before → turning point → after arc.
+    // Universal takeaway at the end. Empathy-driven CTA.
     case 'Personal story':
       post =
 `${hook}
 
-Here's what that journey taught me:
+Honest truth? I almost gave up before I saw any results.
 
-${bullets}
+Here's what the journey actually looked like:
 
-I didn't have all the answers at the start.
-But I had a clear intention — and that made all the difference.
+${points.map(p => `▸ ${p}`).join('\n')}
 
-If you're just starting out: your consistency compounds faster than you think.
+Then something shifted.
+
+I stopped chasing perfection and started chasing consistency.
+That one decision changed everything.
+
+If you're somewhere in the middle of your own story right now —
+this is your sign to keep going.
+
+Progress compounds quietly. Then suddenly.
 
 ${cta}
 
-#PersonalStory #Growth #Creator #BuildInPublic`;
+#MyJourney #BuildingInPublic #PersonalGrowth #Authentic #CreatorLife`;
       break;
 
+    // ── RESOURCE SHARE ────────────────────────────────────────────
+    // Value-first. Checkmark list. "No fluff" tone.
+    // Save-this + share CTA. Community-oriented close.
     case 'Resource share':
       post =
 `${hook}
 
-Why this matters:
+Here's exactly what's inside — no fluff, no gatekeeping:
 
-${bullets}
+${points.map(p => `✅ ${p}`).join('\n')}
 
-Most people overlook resources like this — until they need them.
-Don't be most people.
+I spent hours putting this together so you don't have to.
 
-Save this post and come back to it when you're ready to level up.
+This is the kind of resource I wish existed when I started.
+
+Save this post 🔖 + share it with someone who needs it.
+They'll thank you for it.
 
 ${cta}
 
-#Resources #FreeTools #PersonalBrand #Developer #Creator`;
+#FreeResources #OpenSource #SaveThis #DevResources #CreatorEconomy`;
       break;
 
     default:
@@ -703,7 +803,7 @@ ${cta}
 
 Here's what building it taught me:
 
-${bullets}
+${points.map(p => `✦ ${p}`).join('\n')}
 
 Your email template isn't just a design decision.
 It's a signal to your audience that you care about every detail of how you show up.
@@ -735,7 +835,9 @@ function generateEmailSafeHTML() {
   const subject = document.getElementById('ep-subject').value;
   const greeting = document.getElementById('ep-greeting').value;
   const body    = document.getElementById('ep-body').value;
+  const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta     = document.getElementById('ep-cta').value;
+  const imgUrl  = (document.getElementById('ep-image').value || '').trim();
   const tags    = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
   const issue   = document.getElementById('ep-issue').value;
 
@@ -797,13 +899,14 @@ function generateEmailSafeHTML() {
             <p style="font-size:14px;color:#777777;margin:0 0 16px 0;font-family:Arial,Helvetica,sans-serif;">${escHtml(greeting)}</p>
             <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:900;color:#0e0e0e;margin:0 0 20px 0;line-height:1.2;">${escHtml(subject)}</h1>
             <p style="font-size:14px;color:#555555;line-height:1.8;margin:0 0 28px 0;font-family:Arial,Helvetica,sans-serif;">${bodyLines}</p>
-            <table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px 0;">
+            ${imgUrl ? `<img src="${escHtml(imgUrl)}" alt="${escHtml(subject)}" width="528" style="display:block;width:100%;max-width:528px;height:auto;border-radius:8px;margin:0 0 28px 0;" />` : ''}
+            ${ctaEnabled ? `<table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px 0;">
               <tr>
                 <td style="border-radius:30px;background-color:#080808;border:1px solid rgba(201,149,42,0.5);">
                   <a href="#" style="display:inline-block;padding:12px 28px;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${escHtml(accent)};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${escHtml(cta)}</a>
                 </td>
               </tr>
-            </table>
+            </table>` : ''}
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
               <tr><td style="border-top:1px solid #eeebe3;height:1px;font-size:0;line-height:0;">&nbsp;</td></tr>
             </table>
@@ -837,16 +940,18 @@ function generateEmailSafeHTML() {
 }
 
 function generatePlainText() {
-  const subject  = document.getElementById('ep-subject').value;
-  const greeting = document.getElementById('ep-greeting').value;
-  const body     = document.getElementById('ep-body').value;
-  const cta      = document.getElementById('ep-cta').value;
-  const tags     = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
-  const issue    = document.getElementById('ep-issue').value;
-  const name     = brand.name    || 'Your Name';
-  const website  = brand.website || '';
+  const subject    = document.getElementById('ep-subject').value;
+  const greeting   = document.getElementById('ep-greeting').value;
+  const body       = document.getElementById('ep-body').value;
+  const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
+  const cta        = document.getElementById('ep-cta').value;
+  const imgUrl     = (document.getElementById('ep-image').value || '').trim();
+  const tags       = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  const issue      = document.getElementById('ep-issue').value;
+  const name       = brand.name    || 'Your Name';
+  const website    = brand.website || '';
 
-  return [
+  const lines = [
     issue,
     '━'.repeat(38),
     '',
@@ -856,8 +961,10 @@ function generatePlainText() {
     '',
     body,
     '',
-    cta,
-    '',
+  ];
+  if (imgUrl)     { lines.push('[Image: ' + imgUrl + ']', ''); }
+  if (ctaEnabled) { lines.push(cta, ''); }
+  lines.push(
     '━'.repeat(38),
     tags.length ? 'Tags: ' + tags.join(' · ') : '',
     '',
@@ -865,7 +972,8 @@ function generatePlainText() {
     website,
     '',
     'To unsubscribe, reply with "unsubscribe" in the subject line.'
-  ].filter(l => l !== null).join('\n');
+  );
+  return lines.join('\n');
 }
 
 /* ============================================================

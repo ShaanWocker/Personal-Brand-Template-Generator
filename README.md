@@ -197,8 +197,9 @@ When creating a Gmail draft, the serverless function can fetch media server-side
 - The video file itself is **never fetched or embedded** in the email.
 
 ### URL Security
-- Only `http://` and `https://` URLs are accepted for `imageUrl`, `videoUrl`, and `videoPosterUrl`.
+- Only `http://` and `https://` URLs are accepted for `imageUrl` and `videoPosterUrl`.
 - `data:`, `file:`, `ftp:`, and any other schemes are rejected with a `400` error.
+- The `videoUrl` is generated server-side from the slug and is always a `https://brand-kit.shaanwocker.online/watch/<slug>` URL — it is not accepted as a direct user-provided URL.
 
 ---
 

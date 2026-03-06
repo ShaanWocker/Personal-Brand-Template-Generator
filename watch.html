@@ -242,7 +242,7 @@
   function renderVideo(entry) {
     // Update page meta
     var title = entry.title || 'Watch';
-    document.title = escHtml(title) + ' — Brand Kit';
+    document.title = title + ' — Brand Kit';
 
     var metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc && entry.description) metaDesc.setAttribute('content', entry.description);

@@ -57,7 +57,9 @@ Comes with a built-in **Shaan (demo)** preset and a fully editable **Custom** pr
 ```
 brand-kit/
 ├── index.html              # Static frontend — brand profile, email builder, LinkedIn builder
-├── vercel.json             # Vercel configuration
+├── privacy-policy.html     # Privacy Policy page (also served at /privacy-policy)
+├── terms-of-service.html   # Terms of Service page (also served at /terms-of-service)
+├── vercel.json             # Vercel configuration (routes, rewrites, headers)
 └── api/
     ├── _utils.js           # Shared: cookie helpers, PKCE, token refresh
     ├── auth/
@@ -66,7 +68,7 @@ brand-kit/
     │   ├── status.js       # GET  /api/auth/status     — check connection state
     │   └── disconnect.js   # POST /api/auth/disconnect — clear auth cookies
     └── gmail/
-        └── draft.js        # POST /api/gmail/draft     — create Gmail draft
+        └── draft.js        # POST /api/gmail/draft     — create Gmail draft with CID image embedding
 ```
 
 ---
@@ -177,6 +179,26 @@ Once you've customised your template, you have three export options:
 
 ---
 
+## ✦ Inline Image & Video Embedding in Gmail Drafts
+
+When creating a Gmail draft, the serverless function can fetch media server-side and embed it as a MIME CID attachment so the image renders without Gmail performing an external fetch.
+
+### Inline Images
+- Supply an **Inline Image URL** in the Email Template builder (max **8 MB**).
+- The image is fetched server-side, embedded as a `multipart/related` CID attachment, and the `img src` is rewritten to `cid:…` in the draft.
+- If the fetch fails (network error, size limit exceeded, etc.) the draft falls back to using the external URL.
+
+### Video (Poster Image + Link)
+- Video cannot play inline in email clients — instead, supply a **Video URL** and a **Video Poster Image URL**.
+- The poster image (max **8 MB**) is fetched and embedded as a CID attachment, and rendered in the email as a clickable thumbnail that links to the video URL.
+- The video file itself is **never fetched or embedded**.
+
+### URL Security
+- Only `http://` and `https://` URLs are accepted for `imageUrl`, `videoUrl`, and `videoPosterUrl`.
+- `data:`, `file:`, `ftp:`, and any other schemes are rejected with a `400` error.
+
+---
+
 ## ✦ Email HTML Rendering Caveats
 
 The exported email HTML uses:
@@ -206,6 +228,21 @@ To change the default theme palette, edit `:root` in `index.html`:
   --white:  #f0ece4;   /* Body text */
 }
 ```
+
+---
+
+## ✦ Legal Pages
+
+The app includes a **Privacy Policy** and **Terms of Service** available at clean URLs on the deployed domain:
+
+| Page | Clean URL | File |
+|---|---|---|
+| Privacy Policy | `/privacy-policy` | `privacy-policy.html` |
+| Terms of Service | `/terms-of-service` | `terms-of-service.html` |
+
+Routing is handled by Vercel rewrites in `vercel.json` — no extra configuration is needed after deployment.
+
+To customise the legal pages, edit `privacy-policy.html` and `terms-of-service.html` directly. Update the contact email address (`connect@shaanwocker.online`) and effective date to match your deployment.
 
 ---
 

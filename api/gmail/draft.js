@@ -70,6 +70,9 @@ function replaceUrlInHtml(html, rawUrl, replacement) {
   return result;
 }
 
+/** Monotonically incrementing counter used to guarantee unique CIDs within a request. */
+let _cidCounter = 0;
+
 /** Generate a random MIME boundary string. */
 function generateBoundary() {
   return 'BrandKit_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -102,8 +105,8 @@ function buildMultipartMessage({ to, subject, html, parts }) {
   // Inline image parts
   for (const part of parts) {
     const b64 = part.buffer.toString('base64');
-    // RFC 2045: fold base64 at 76 characters
-    const b64Folded = b64.match(/.{1,76}/g).join('\r\n');
+    // RFC 2045: fold base64 at 76 characters; handle empty buffer defensively
+    const b64Folded = b64.length > 0 ? (b64.match(/.{1,76}/g) || [b64]).join('\r\n') : '';
 
     message += `--${boundary}\r\n`;
     message += `Content-Type: ${part.contentType}\r\n`;
@@ -191,7 +194,7 @@ module.exports = async function handler(req, res) {
   if (imageUrl) {
     try {
       const { buffer, contentType } = await fetchWithSizeLimit(imageUrl, IMAGE_SIZE_LIMIT);
-      const cid = `inline-image-${Date.now()}`;
+      const cid = `inline-image-${Date.now()}-${++_cidCounter}`;
       inlineParts.push({ cid, buffer, contentType });
       processedHtml = replaceUrlInHtml(processedHtml, imageUrl, `cid:${cid}`);
     } catch (err) {
@@ -203,7 +206,7 @@ module.exports = async function handler(req, res) {
   if (videoPosterUrl) {
     try {
       const { buffer, contentType } = await fetchWithSizeLimit(videoPosterUrl, IMAGE_SIZE_LIMIT);
-      const cid = `video-poster-${Date.now()}`;
+      const cid = `video-poster-${Date.now()}-${++_cidCounter}`;
       inlineParts.push({ cid, buffer, contentType });
       processedHtml = replaceUrlInHtml(processedHtml, videoPosterUrl, `cid:${cid}`);
     } catch (err) {

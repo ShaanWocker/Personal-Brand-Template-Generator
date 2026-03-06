@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO (updated dynamically) -->
+  <title>Watch — Brand Kit</title>
+  <meta name="description" content="Watch a video on Brand Kit." />
+  <link rel="canonical" href="https://brand-kit.shaanwocker.online/" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="Brand Kit" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://brand-kit.shaanwocker.online/" />
+
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --black:   #080808;
+      --dark:    #0e0e0e;
+      --card:    #131313;
+      --border:  #2a2518;
+      --gold:    #c9952a;
+      --gold2:   #e8b84b;
+      --gold-lt: #f5d07a;
+      --white:   #f0ece4;
+      --muted:   #8a8070;
+      --serif:   'Playfair Display', serif;
+      --body:    'Jost', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--body);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 40% at 50% 110%, rgba(201,149,42,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 30% at 20% 60%,  rgba(201,149,42,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 25% at 80% 30%,  rgba(201,149,42,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 3rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .brand { display: flex; align-items: center; gap: 1rem; text-decoration: none; }
+    .brand-mark { font-family: var(--serif); font-size: 1.1rem; color: var(--gold); font-weight: 700; }
+    .brand-sep { color: var(--border); font-size: 1.2rem; }
+    .brand-sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 300; }
+
+    /* ── Main ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* ── Video container ── */
+    .video-wrap {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ── Title / description ── */
+    .video-title {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+      margin-bottom: 0.8rem;
+      line-height: 1.25;
+    }
+
+    .video-description {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ── Accent stripe under header ── */
+    .accent-stripe {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold2) 60%, transparent);
+    }
+
+    /* ── Not-found state ── */
+    .not-found {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .not-found-icon {
+      font-size: 3rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .not-found-title {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+      margin-bottom: 0.8rem;
+    }
+
+    .not-found-msg {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.8rem;
+      border-radius: 30px;
+      border: 1px solid rgba(201,149,42,0.5);
+      background: transparent;
+      color: var(--gold);
+      font-family: var(--body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .btn-home:hover { background: rgba(201,149,42,0.08); border-color: var(--gold); }
+
+    /* ── Loading state ── */
+    .loading {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      .header { padding: 1.2rem 1.5rem; }
+      main { padding: 2rem 1.2rem; }
+      .video-title { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="content">
+
+  <!-- Header -->
+  <header class="header">
+    <a class="brand" href="/">
+      <span class="brand-mark">✦ Brand Kit</span>
+      <span class="brand-sep">|</span>
+      <span class="brand-sub">Watch</span>
+    </a>
+  </header>
+  <div class="accent-stripe"></div>
+
+  <!-- Main content (populated by JS) -->
+  <main id="main">
+    <div class="loading">Loading…</div>
+  </main>
+
+</div><!-- /.content -->
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Helpers ── */
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ── Extract slug from path: /watch/<slug> ── */
+  function getSlug() {
+    var path = window.location.pathname; // e.g. /watch/demo
+    var match = path.match(/^\/watch\/(.+)$/);
+    if (!match) return '';
+    try {
+      return decodeURIComponent(match[1]).trim();
+    } catch (_) {
+      return match[1].trim();
+    }
+  }
+
+  /* ── Render ── */
+  function renderVideo(entry) {
+    // Update page meta
+    var title = entry.title || 'Watch';
+    document.title = escHtml(title) + ' — Brand Kit';
+
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && entry.description) metaDesc.setAttribute('content', entry.description);
+
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) {
+      ogTitle = document.createElement('meta');
+      ogTitle.setAttribute('property', 'og:title');
+      document.head.appendChild(ogTitle);
+    }
+    ogTitle.setAttribute('content', title + ' — Brand Kit');
+
+    var main = document.getElementById('main');
+    main.innerHTML =
+      '<div class="video-wrap">' +
+        '<iframe' +
+        ' src="https://player.vimeo.com/video/' + escHtml(String(entry.vimeoId)) + '?autoplay=1&title=0&byline=0&portrait=0"' +
+        ' allow="autoplay; fullscreen; picture-in-picture"' +
+        ' allowfullscreen' +
+        ' title="' + escHtml(title) + '"' +
+        '></iframe>' +
+      '</div>' +
+      '<h1 class="video-title">' + escHtml(title) + '</h1>' +
+      (entry.description
+        ? '<p class="video-description">' + escHtml(entry.description) + '</p>'
+        : '');
+  }
+
+  function renderNotFound(slug) {
+    document.title = 'Video not found — Brand Kit';
+    var main = document.getElementById('main');
+    main.innerHTML =
+      '<div class="not-found">' +
+        '<div class="not-found-icon">🎬</div>' +
+        '<h1 class="not-found-title">Video not found</h1>' +
+        '<p class="not-found-msg">' +
+          (slug
+            ? 'No video is mapped to the slug &ldquo;' + escHtml(slug) + '&rdquo;.'
+            : 'No video slug was specified.') +
+          '<br>Check the link or return to the home page.' +
+        '</p>' +
+        '<a class="btn-home" href="/">← Back to Brand Kit</a>' +
+      '</div>';
+  }
+
+  /* ── Main ── */
+  var slug = getSlug();
+
+  if (!slug) {
+    renderNotFound('');
+    return;
+  }
+
+  fetch('/watch-map.json')
+    .then(function (r) {
+      if (!r.ok) throw new Error('fetch failed');
+      return r.json();
+    })
+    .then(function (map) {
+      var entry = map[slug];
+      if (!entry || !entry.vimeoId) {
+        renderNotFound(slug);
+      } else {
+        renderVideo(entry);
+      }
+    })
+    .catch(function () {
+      renderNotFound(slug);
+    });
+})();
+</script>
+</body>
+</html>

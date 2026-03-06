@@ -57,6 +57,8 @@ Comes with a built-in **Shaan (demo)** preset and a fully editable **Custom** pr
 ```
 brand-kit/
 ├── index.html              # Static frontend — brand profile, email builder, LinkedIn builder
+├── watch.html              # Branded watch page — embeds Vimeo video for a given slug
+├── watch-map.json          # Slug → Vimeo ID mapping (add your own entries here)
 ├── privacy-policy.html     # Privacy Policy page (also served at /privacy-policy)
 ├── terms-of-service.html   # Terms of Service page (also served at /terms-of-service)
 ├── vercel.json             # Vercel configuration (routes, rewrites, headers)
@@ -188,14 +190,65 @@ When creating a Gmail draft, the serverless function can fetch media server-side
 - The image is fetched server-side, embedded as a `multipart/related` CID attachment, and the `img src` is rewritten to `cid:…` in the draft.
 - If the fetch fails (network error, size limit exceeded, etc.) the draft falls back to using the external URL.
 
-### Video (Poster Image + Link)
-- Video cannot play inline in email clients — instead, supply a **Video URL** and a **Video Poster Image URL**.
-- The poster image (max **8 MB**) is fetched and embedded as a CID attachment, and rendered in the email as a clickable thumbnail that links to the video URL.
-- The video file itself is **never fetched or embedded**.
+### Video (Poster Thumbnail + Watch Page)
+- Video cannot play inline in email clients — instead, supply a **Video Slug** and a **Video Poster Image URL**.
+- The **Video Slug** is mapped to a Vimeo video ID via `watch-map.json` (see below). The generated watch URL (`https://brand-kit.shaanwocker.online/watch/<slug>`) is embedded as the link on the poster thumbnail.
+- The poster image (max **8 MB**) is fetched server-side and embedded as a CID attachment; the thumbnail links to the watch page.
+- The video file itself is **never fetched or embedded** in the email.
 
 ### URL Security
 - Only `http://` and `https://` URLs are accepted for `imageUrl`, `videoUrl`, and `videoPosterUrl`.
 - `data:`, `file:`, `ftp:`, and any other schemes are rejected with a `400` error.
+
+---
+
+## ✦ Watch Page & `watch-map.json`
+
+Brand Kit includes a branded `/watch/<slug>` page that embeds a Vimeo video.
+
+### How it works
+
+1. A visitor opens `https://brand-kit.shaanwocker.online/watch/my-launch-video`.
+2. `watch.html` (served via a Vercel rewrite) reads the `my-launch-video` slug from the URL.
+3. It fetches `/watch-map.json` and looks up the slug.
+4. If found, it renders a branded page with the Vimeo embed, title, and optional description.
+5. If not found, it shows a branded "Video not found" page with a link back to `/`.
+
+### Adding your own slugs
+
+Edit `watch-map.json` at the repo root:
+
+```json
+{
+  "my-launch-video": {
+    "vimeoId": "123456789",
+    "title": "My Launch Video",
+    "description": "An optional description shown below the video."
+  }
+}
+```
+
+| Key | Required | Description |
+|---|---|---|
+| `vimeoId` | ✅ | Numeric Vimeo video ID (find it in your Vimeo video URL) |
+| `title` | ✅ | Displayed as the page `<h1>` and browser tab title |
+| `description` | optional | Shown below the video |
+
+### Using a slug in the Email Builder
+
+In the **Email Template** panel:
+1. Enter your slug in the **Video Slug** field (e.g. `my-launch-video`).
+2. Add a **Video Poster Image URL** — a thumbnail image that becomes the clickable preview in the email.
+3. The app generates the full watch URL (`https://brand-kit.shaanwocker.online/watch/<slug>`) internally and links the poster image to it.
+
+> 💡 Email clients cannot play video inline — the poster image acts as a clickable thumbnail that takes readers to the watch page.
+
+### URL structure
+
+| Path | File | Notes |
+|---|---|---|
+| `/watch/<slug>` | `watch.html` | Served via Vercel rewrite; slug looked up in `watch-map.json` |
+| `/watch-map.json` | `watch-map.json` | Static JSON; fetched client-side by `watch.html` |
 
 ---
 

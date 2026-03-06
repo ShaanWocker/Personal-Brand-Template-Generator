@@ -362,6 +362,9 @@
         <div id="ep-cta-field">
           <label>CTA Button Text</label>
           <input id="ep-cta" type="text" value="Read the full breakdown →" oninput="updateEmail()"/>
+          <label>CTA Button Link URL</label>
+          <input id="ep-cta-url" type="url" value="https://shaanwocker.online/" placeholder="https://example.com" oninput="updateEmail()"/>
+          <div id="ep-cta-url-warning" style="display:none;color:#c0392b;font-size:0.72rem;margin-top:0.25rem;">CTA link is required when CTA Button is enabled.</div>
         </div>
         <label>Inline Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional, max 8 MB)</span></label>
         <input id="ep-image" type="url" placeholder="https://example.com/image.jpg" oninput="updateEmail()"/>
@@ -657,12 +660,34 @@ function updateEmail() {
   setText('prev-issue',    document.getElementById('ep-issue').value);
 
   // CTA toggle
-  const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
-  const ctaField   = document.getElementById('ep-cta-field');
-  const ctaEl      = document.getElementById('prev-cta');
+  const ctaEnabled  = document.getElementById('ep-cta-enabled').checked;
+  const ctaField    = document.getElementById('ep-cta-field');
+  const ctaEl       = document.getElementById('prev-cta');
+  const ctaUrlInput = document.getElementById('ep-cta-url');
+  const ctaWarning  = document.getElementById('ep-cta-url-warning');
   if (ctaField) ctaField.style.display = ctaEnabled ? '' : 'none';
   if (ctaEl)   ctaEl.style.display    = ctaEnabled ? '' : 'none';
-  if (ctaEnabled) setText('prev-cta', document.getElementById('ep-cta').value);
+  if (ctaEnabled) {
+    setText('prev-cta', document.getElementById('ep-cta').value);
+    const ctaUrl = (ctaUrlInput ? ctaUrlInput.value : '').trim();
+    const urlValid = /^https?:\/\/.+/.test(ctaUrl);
+    if (ctaWarning) ctaWarning.style.display = urlValid ? 'none' : '';
+    if (ctaUrlInput) ctaUrlInput.style.outline = urlValid ? '' : '2px solid #c0392b';
+    if (ctaEl) {
+      if (urlValid) {
+        ctaEl.href = ctaUrl;
+        ctaEl.setAttribute('target', '_blank');
+        ctaEl.setAttribute('rel', 'noopener noreferrer');
+      } else {
+        ctaEl.href = '#';
+        ctaEl.removeAttribute('target');
+        ctaEl.removeAttribute('rel');
+      }
+    }
+  } else {
+    if (ctaWarning)  ctaWarning.style.display = 'none';
+    if (ctaUrlInput) ctaUrlInput.style.outline = '';
+  }
 
   // Inline image
   const imgUrl  = (document.getElementById('ep-image').value || '').trim();
@@ -850,6 +875,18 @@ ${cta}
 }
 
 /* ============================================================
+   CTA URL VALIDATION HELPER
+   ============================================================ */
+function validateCtaUrl() {
+  const ctaEnabled  = document.getElementById('ep-cta-enabled').checked;
+  if (!ctaEnabled) return { valid: true, url: '' };
+  const ctaUrlInput = document.getElementById('ep-cta-url');
+  const url = ctaUrlInput ? ctaUrlInput.value.trim() : '';
+  const valid = /^https?:\/\/.+/.test(url);
+  return { valid, url };
+}
+
+/* ============================================================
    EMAIL-SAFE HTML GENERATION
    ============================================================ */
 function escHtml(str) {
@@ -866,6 +903,7 @@ function generateEmailSafeHTML() {
   const body    = document.getElementById('ep-body').value;
   const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta     = document.getElementById('ep-cta').value;
+  const ctaUrl  = ctaEnabled ? ((document.getElementById('ep-cta-url').value || '').trim()) : '';
   const imgUrl  = (document.getElementById('ep-image').value || '').trim();
   const videoSlug   = (document.getElementById('ep-video-slug').value || '').trim();
   const videoUrl    = videoSlug
@@ -952,7 +990,7 @@ function generateEmailSafeHTML() {
             ${ctaEnabled ? `<table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px 0;">
               <tr>
                 <td style="border-radius:30px;background-color:#080808;border:1px solid rgba(201,149,42,0.5);">
-                  <a href="#" style="display:inline-block;padding:12px 28px;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${escHtml(accent)};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${escHtml(cta)}</a>
+                  <a href="${escHtml(ctaUrl || '#')}" ${ctaUrl ? 'target="_blank" rel="noopener noreferrer"' : ''} style="display:inline-block;padding:12px 28px;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${escHtml(accent)};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${escHtml(cta)}</a>
                 </td>
               </tr>
             </table>` : ''}
@@ -994,6 +1032,7 @@ function generatePlainText() {
   const body       = document.getElementById('ep-body').value;
   const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta        = document.getElementById('ep-cta').value;
+  const ctaUrl     = ctaEnabled ? ((document.getElementById('ep-cta-url').value || '').trim()) : '';
   const imgUrl     = (document.getElementById('ep-image').value || '').trim();
   const videoSlug  = (document.getElementById('ep-video-slug').value || '').trim();
   const videoUrl   = videoSlug
@@ -1017,7 +1056,11 @@ function generatePlainText() {
   ];
   if (imgUrl)     { lines.push('[Image: ' + imgUrl + ']', ''); }
   if (videoUrl)   { lines.push('[Video: ' + videoUrl + ']', ''); }
-  if (ctaEnabled) { lines.push(cta, ''); }
+  if (ctaEnabled) {
+    lines.push(cta);
+    if (ctaUrl) { lines.push(ctaUrl); }
+    lines.push('');
+  }
   lines.push(
     '━'.repeat(38),
     tags.length ? 'Tags: ' + tags.join(' · ') : '',
@@ -1034,6 +1077,11 @@ function generatePlainText() {
    COPY HELPERS
    ============================================================ */
 function copyEmailHTML() {
+  const { valid } = validateCtaUrl();
+  if (!valid) {
+    showToast('⚠ CTA link is required when CTA Button is enabled.', true);
+    return;
+  }
   const html = generateEmailSafeHTML();
   navigator.clipboard.writeText(html)
     .then(() => showToast('✓ Email-safe HTML copied — paste into your email platform!'))
@@ -1041,6 +1089,11 @@ function copyEmailHTML() {
 }
 
 function copyEmailPlainText() {
+  const { valid } = validateCtaUrl();
+  if (!valid) {
+    showToast('⚠ CTA link is required when CTA Button is enabled.', true);
+    return;
+  }
   const txt = generatePlainText();
   navigator.clipboard.writeText(txt)
     .then(() => showToast('✓ Plain text copied!'))
@@ -1147,6 +1200,15 @@ async function disconnectGmail() {
 async function createGmailDraft() {
   const btn = document.getElementById('btn-create-draft');
   const statusEl = document.getElementById('gmail-draft-status');
+
+  const { valid: ctaUrlValid } = validateCtaUrl();
+  if (!ctaUrlValid) {
+    if (statusEl) {
+      statusEl.innerHTML = '<div class="status-msg status-error">⚠ CTA link is required when CTA Button is enabled.</div>';
+    }
+    return;
+  }
+
   if (btn) btn.disabled = true;
   if (statusEl) {
     statusEl.innerHTML = '<div class="status-msg status-info">Creating draft…</div>';
@@ -1206,11 +1268,45 @@ function handleRedirectParams() {
 }
 
 /* ============================================================
+   EMAIL PANEL PERSISTENCE
+   ============================================================ */
+const EMAIL_PANEL_DEFAULTS = {
+  'ep-cta-url': 'https://shaanwocker.online/'
+};
+
+function loadEmailPanel() {
+  try {
+    const saved = localStorage.getItem('emailPanel');
+    const data  = saved ? JSON.parse(saved) : {};
+    for (const [id, def] of Object.entries(EMAIL_PANEL_DEFAULTS)) {
+      const el = document.getElementById(id);
+      if (el) el.value = (id in data) ? data[id] : def;
+    }
+  } catch (_) {}
+}
+
+function saveEmailPanelField(id) {
+  try {
+    const saved = localStorage.getItem('emailPanel');
+    const data  = saved ? JSON.parse(saved) : {};
+    const el    = document.getElementById(id);
+    if (el) data[id] = el.value;
+    localStorage.setItem('emailPanel', JSON.stringify(data));
+  } catch (_) {}
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 loadBrand();
+loadEmailPanel();
+updateEmail();
 handleRedirectParams();
 checkGmailStatus();
+
+// Persist ep-cta-url on input
+const _ctaUrlEl = document.getElementById('ep-cta-url');
+if (_ctaUrlEl) _ctaUrlEl.addEventListener('input', () => saveEmailPanelField('ep-cta-url'));
 </script>
 </body>
 </html>

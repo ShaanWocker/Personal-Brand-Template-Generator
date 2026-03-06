@@ -43,6 +43,7 @@ Comes with a built-in **Shaan (demo)** preset and a fully editable **Custom** pr
 | 👤 **Brand Profile** | Set your name, tagline, website, initials, and accent colour — persisted to localStorage |
 | ✦ Shaan preset | Demo values pre-filled so the tool works immediately out of the box |
 | 📧 **Live Email Preview** | See your branded template update in real time as you type |
+| 🔗 **CTA Button Link URL** | Required when CTA Button is enabled — validated http/https URL, persisted to localStorage |
 | 📤 **Email-safe HTML Export** | Table-based, inline-styled HTML that renders correctly in Gmail, Outlook, Apple Mail |
 | ✉ **Gmail Draft** | OAuth 2.0 (PKCE) — create a draft in your own Gmail, never auto-sends |
 | 💼 **LinkedIn Post Generator** | Four post-type templates: *Behind the scenes*, *Tip/Tutorial*, *Personal story*, *Resource share* |

@@ -1,17 +1,139 @@
 'use strict';
 const { parseCookies, refreshAccessToken } = require('../_utils');
 
+/** Maximum size for fetched inline images (8 MB). */
+const IMAGE_SIZE_LIMIT = 8 * 1024 * 1024;
+
+/**
+ * Returns true only if the URL scheme is http or https.
+ * Rejects data:, file:, ftp:, and any other scheme.
+ */
+function isSafeUrl(url) {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+}
+
+/**
+ * Fetch a URL and return { buffer, contentType }.
+ * Throws if the response is not OK or the body exceeds maxBytes.
+ */
+async function fetchWithSizeLimit(url, maxBytes) {
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (err) {
+    throw new Error(`Network error fetching resource: ${err.message}`);
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch resource: HTTP ${response.status}`);
+  }
+
+  const contentType = (response.headers.get('content-type') || 'application/octet-stream')
+    .split(';')[0].trim();
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let totalBytes = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    totalBytes += value.length;
+    if (totalBytes > maxBytes) {
+      reader.cancel().catch(() => {});
+      throw new Error(
+        `Resource exceeds the ${Math.round(maxBytes / (1024 * 1024))} MB size limit.`
+      );
+    }
+    chunks.push(value);
+  }
+
+  const buffer = Buffer.concat(chunks.map(c => Buffer.from(c)));
+  return { buffer, contentType };
+}
+
+/**
+ * Replace every occurrence of rawUrl (and its HTML-attribute-encoded form) in
+ * the HTML string with the given replacement string.
+ */
+function replaceUrlInHtml(html, rawUrl, replacement) {
+  // Also handle URLs where & was HTML-encoded as &amp; (produced by escHtml() on the client)
+  const encodedUrl = rawUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  let result = html.split(rawUrl).join(replacement);
+  if (encodedUrl !== rawUrl) {
+    result = result.split(encodedUrl).join(replacement);
+  }
+  return result;
+}
+
+/** Generate a random MIME boundary string. */
+function generateBoundary() {
+  return 'BrandKit_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+/**
+ * Build a multipart/related MIME message containing an HTML body part
+ * followed by inline image parts (base64-encoded, identified by Content-ID).
+ */
+function buildMultipartMessage({ to, subject, html, parts }) {
+  const boundary = generateBoundary();
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`;
+
+  const headers = [
+    to ? `To: ${to}` : '',
+    `Subject: ${encodedSubject}`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/related; boundary="${boundary}"`,
+  ].filter(Boolean);
+
+  let message = headers.join('\r\n') + '\r\n\r\n';
+
+  // HTML body part
+  message += `--${boundary}\r\n`;
+  message += 'Content-Type: text/html; charset=UTF-8\r\n';
+  message += 'Content-Transfer-Encoding: quoted-printable\r\n';
+  message += '\r\n';
+  message += quotedPrintableEncode(html) + '\r\n';
+
+  // Inline image parts
+  for (const part of parts) {
+    const b64 = part.buffer.toString('base64');
+    // RFC 2045: fold base64 at 76 characters
+    const b64Folded = b64.match(/.{1,76}/g).join('\r\n');
+
+    message += `--${boundary}\r\n`;
+    message += `Content-Type: ${part.contentType}\r\n`;
+    message += 'Content-Transfer-Encoding: base64\r\n';
+    message += `Content-ID: <${part.cid}>\r\n`;
+    message += 'Content-Disposition: inline\r\n';
+    message += '\r\n';
+    message += b64Folded + '\r\n';
+  }
+
+  message += `--${boundary}--\r\n`;
+  return message;
+}
+
 /**
  * POST /api/gmail/draft
  *
  * Creates a Gmail draft in the authenticated user's mailbox using the
- * Gmail REST API.  Expects a JSON body: { subject, html, to? }
+ * Gmail REST API.
  *
- * The draft is created with:
- *   - MIME-Version: 1.0
- *   - Content-Type: text/html; charset=UTF-8
+ * Expects a JSON body:
+ *   { subject, html, to?, imageUrl?, videoUrl?, videoPosterUrl? }
  *
- * The raw RFC 2822 message is base64url-encoded for the Gmail API.
+ * When imageUrl is provided the image is fetched server-side (max 8 MB),
+ * embedded as a CID attachment, and the HTML img src is rewritten to cid:…
+ * so Gmail renders it without an external fetch.
+ *
+ * When videoPosterUrl (and videoUrl) are provided the poster image is
+ * likewise embedded as CID.  The video itself is never fetched or embedded;
+ * only the poster image (linked to videoUrl) appears in the email.
  */
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -40,11 +162,63 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON body.' });
   }
 
-  const { subject = '(no subject)', html = '', to = '' } = body;
+  const {
+    subject      = '(no subject)',
+    html         = '',
+    to           = '',
+    imageUrl     = '',
+    videoUrl     = '',
+    videoPosterUrl = '',
+  } = body;
 
-  // Build RFC 2822 message
-  const rawMessage = buildRawMessage({ to, subject, html });
-  const encoded    = Buffer.from(rawMessage).toString('base64url');
+  // Validate supplied URLs — only http/https are permitted
+  if (imageUrl && !isSafeUrl(imageUrl)) {
+    return res.status(400).json({ error: 'Invalid imageUrl: only http and https URLs are allowed.' });
+  }
+  if (videoUrl && !isSafeUrl(videoUrl)) {
+    return res.status(400).json({ error: 'Invalid videoUrl: only http and https URLs are allowed.' });
+  }
+  if (videoPosterUrl && !isSafeUrl(videoPosterUrl)) {
+    return res.status(400).json({
+      error: 'Invalid videoPosterUrl: only http and https URLs are allowed.',
+    });
+  }
+
+  // Fetch inline images and build CID attachment list
+  const inlineParts = [];
+  let processedHtml = html;
+
+  if (imageUrl) {
+    try {
+      const { buffer, contentType } = await fetchWithSizeLimit(imageUrl, IMAGE_SIZE_LIMIT);
+      const cid = `inline-image-${Date.now()}`;
+      inlineParts.push({ cid, buffer, contentType });
+      processedHtml = replaceUrlInHtml(processedHtml, imageUrl, `cid:${cid}`);
+    } catch (err) {
+      // Graceful fallback: log the warning and leave the external URL intact
+      console.warn('Could not embed inline image (falling back to external URL):', err.message);
+    }
+  }
+
+  if (videoPosterUrl) {
+    try {
+      const { buffer, contentType } = await fetchWithSizeLimit(videoPosterUrl, IMAGE_SIZE_LIMIT);
+      const cid = `video-poster-${Date.now()}`;
+      inlineParts.push({ cid, buffer, contentType });
+      processedHtml = replaceUrlInHtml(processedHtml, videoPosterUrl, `cid:${cid}`);
+    } catch (err) {
+      console.warn(
+        'Could not embed video poster image (falling back to external URL):', err.message
+      );
+    }
+  }
+
+  // Build RFC 2822 / MIME message
+  const rawMessage = inlineParts.length > 0
+    ? buildMultipartMessage({ to, subject, html: processedHtml, parts: inlineParts })
+    : buildRawMessage({ to, subject, html: processedHtml });
+
+  const encoded = Buffer.from(rawMessage).toString('base64url');
 
   // Call Gmail API
   let apiRes;

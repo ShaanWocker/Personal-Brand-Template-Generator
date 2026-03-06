@@ -363,14 +363,18 @@
           <label>CTA Button Text</label>
           <input id="ep-cta" type="text" value="Read the full breakdown →" oninput="updateEmail()"/>
         </div>
-        <label>Inline Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <label>Inline Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional, max 8 MB)</span></label>
         <input id="ep-image" type="url" placeholder="https://example.com/image.jpg" oninput="updateEmail()"/>
+        <label>Video URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional — links poster image to your video)</span></label>
+        <input id="ep-video-url" type="url" placeholder="https://youtube.com/watch?v=…" oninput="updateEmail()"/>
+        <label>Video Poster Image URL <span style="font-size:0.6rem;font-style:italic;text-transform:none;letter-spacing:0">(optional, max 8 MB — embedded as clickable thumbnail)</span></label>
+        <input id="ep-video-poster" type="url" placeholder="https://example.com/poster.jpg" oninput="updateEmail()"/>
         <label>Tags (comma-separated)</label>
         <input id="ep-tags" type="text" value="Dev, Portfolio, Career" oninput="updateEmail()"/>
         <label>Issue / Edition Label</label>
         <input id="ep-issue" type="text" value="Issue #01 · Weekly Notes" oninput="updateEmail()"/>
       </div>
-      <div class="tip"><strong>Pro tip —</strong> Keep your subject line under 50 characters for best open rates. Use <code>[First Name]</code> as your personalisation token — Beehiiv, ConvertKit, and Mailchimp will auto-replace it. Toggle the <strong>CTA Button</strong> off if your email doesn't need a call-to-action. Add an <strong>Inline Image URL</strong> to embed a rendered image directly in your email body.</div>
+      <div class="tip"><strong>Pro tip —</strong> Keep your subject line under 50 characters for best open rates. Use <code>[First Name]</code> as your personalisation token — Beehiiv, ConvertKit, and Mailchimp will auto-replace it. Toggle the <strong>CTA Button</strong> off if your email doesn't need a call-to-action. Add an <strong>Inline Image URL</strong> to embed an image directly in your email body (max 8 MB). Add a <strong>Video URL</strong> and <strong>Video Poster Image URL</strong> to embed a clickable thumbnail that links to your video — video cannot play inline in email clients, so a poster image is used instead.</div>
     </div>
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem">
@@ -402,6 +406,7 @@
           <div class="ep-subject" id="prev-subject">How I built a dev portfolio that actually gets replies</div>
           <div class="ep-body-text" id="prev-body">This week I've been working on something I've wanted to share for a while — a breakdown of exactly how I structured my developer portfolio to stand out and start meaningful conversations.</div>
           <div id="prev-image-wrap" style="display:none"><img id="prev-image" src="" alt="Email content image" class="ep-inline-img" onerror="this.parentElement.style.display='none'"/></div>
+          <div id="prev-video-wrap" style="display:none"><a id="prev-video-link" href="#" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;"><img id="prev-video-poster" src="" alt="Video preview" class="ep-inline-img" style="display:block;" onerror="this.parentElement.parentElement.style.display='none'"/><div style="margin-top:0.3rem;font-size:0.65rem;color:var(--muted);text-align:center;">▶ Click to watch video</div></a></div>
           <a class="ep-cta-btn" id="prev-cta" href="#">Read the full breakdown →</a>
           <hr class="ep-divider"/>
           <div class="ep-tags" id="prev-tags">
@@ -499,6 +504,12 @@ It took 2 hours to build — and it's already opening new conversations</textare
 </div>
 
 </div><!-- .content -->
+
+<footer style="text-align:center;padding:1.5rem 1rem;font-size:0.65rem;color:#555;border-top:1px solid #1a1a1a;margin-top:2rem;">
+  <a href="/privacy-policy" style="color:#777;text-decoration:none;margin:0 0.6rem;" rel="noopener noreferrer">Privacy Policy</a>
+  <span style="color:#333;">·</span>
+  <a href="/terms-of-service" style="color:#777;text-decoration:none;margin:0 0.6rem;" rel="noopener noreferrer">Terms of Service</a>
+</footer>
 
 <script>
 /* ============================================================
@@ -663,6 +674,21 @@ function updateEmail() {
   } else {
     imgWrap.style.display = 'none';
     imgEl.src = '';
+  }
+
+  // Video poster image
+  const videoUrl    = (document.getElementById('ep-video-url').value || '').trim();
+  const posterUrl   = (document.getElementById('ep-video-poster').value || '').trim();
+  const videoWrap   = document.getElementById('prev-video-wrap');
+  const videoLink   = document.getElementById('prev-video-link');
+  const posterEl    = document.getElementById('prev-video-poster');
+  if (posterUrl) {
+    posterEl.src = posterUrl;
+    if (videoLink) videoLink.href = videoUrl || '#';
+    videoWrap.style.display = '';
+  } else {
+    videoWrap.style.display = 'none';
+    posterEl.src = '';
   }
 
   const tags = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
@@ -838,6 +864,8 @@ function generateEmailSafeHTML() {
   const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta     = document.getElementById('ep-cta').value;
   const imgUrl  = (document.getElementById('ep-image').value || '').trim();
+  const videoUrl    = (document.getElementById('ep-video-url').value || '').trim();
+  const videoPosterUrl = (document.getElementById('ep-video-poster').value || '').trim();
   const tags    = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
   const issue   = document.getElementById('ep-issue').value;
 
@@ -852,6 +880,20 @@ function generateEmailSafeHTML() {
   ).join('');
 
   const bodyLines = escHtml(body).replace(/\n/g, '<br>');
+
+  // Video poster block: poster image wrapped in a link to the video URL.
+  // Note: video cannot play inline in email clients; the poster is a clickable thumbnail.
+  const videoPosterHTML = (videoPosterUrl && videoUrl) ? `
+            <table cellpadding="0" cellspacing="0" border="0" width="528" style="margin:0 0 28px 0;max-width:528px;">
+              <tr>
+                <td>
+                  <a href="${escHtml(videoUrl)}" style="display:block;text-decoration:none;" target="_blank" rel="noopener noreferrer">
+                    <img src="${escHtml(videoPosterUrl)}" alt="Video preview — click to watch" width="528" style="display:block;width:100%;max-width:528px;height:auto;border-radius:8px;" />
+                    <p style="margin:6px 0 0 0;font-size:11px;color:#777777;text-align:center;font-family:Arial,Helvetica,sans-serif;">&#9654; Click to watch video</p>
+                  </a>
+                </td>
+              </tr>
+            </table>` : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -900,6 +942,7 @@ function generateEmailSafeHTML() {
             <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:900;color:#0e0e0e;margin:0 0 20px 0;line-height:1.2;">${escHtml(subject)}</h1>
             <p style="font-size:14px;color:#555555;line-height:1.8;margin:0 0 28px 0;font-family:Arial,Helvetica,sans-serif;">${bodyLines}</p>
             ${imgUrl ? `<img src="${escHtml(imgUrl)}" alt="${escHtml(subject)}" width="528" style="display:block;width:100%;max-width:528px;height:auto;border-radius:8px;margin:0 0 28px 0;" />` : ''}
+            ${videoPosterHTML}
             ${ctaEnabled ? `<table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px 0;">
               <tr>
                 <td style="border-radius:30px;background-color:#080808;border:1px solid rgba(201,149,42,0.5);">
@@ -946,6 +989,7 @@ function generatePlainText() {
   const ctaEnabled = document.getElementById('ep-cta-enabled').checked;
   const cta        = document.getElementById('ep-cta').value;
   const imgUrl     = (document.getElementById('ep-image').value || '').trim();
+  const videoUrl   = (document.getElementById('ep-video-url').value || '').trim();
   const tags       = document.getElementById('ep-tags').value.split(',').map(t => t.trim()).filter(Boolean);
   const issue      = document.getElementById('ep-issue').value;
   const name       = brand.name    || 'Your Name';
@@ -963,6 +1007,7 @@ function generatePlainText() {
     '',
   ];
   if (imgUrl)     { lines.push('[Image: ' + imgUrl + ']', ''); }
+  if (videoUrl)   { lines.push('[Video: ' + videoUrl + ']', ''); }
   if (ctaEnabled) { lines.push(cta, ''); }
   lines.push(
     '━'.repeat(38),
@@ -1098,14 +1143,17 @@ async function createGmailDraft() {
     statusEl.innerHTML = '<div class="status-msg status-info">Creating draft…</div>';
   }
 
-  const subject = document.getElementById('ep-subject').value;
-  const html    = generateEmailSafeHTML();
+  const subject       = document.getElementById('ep-subject').value;
+  const html          = generateEmailSafeHTML();
+  const imageUrl      = (document.getElementById('ep-image').value || '').trim();
+  const videoUrl      = (document.getElementById('ep-video-url').value || '').trim();
+  const videoPosterUrl = (document.getElementById('ep-video-poster').value || '').trim();
 
   try {
     const res = await fetch('/api/gmail/draft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subject, html })
+      body: JSON.stringify({ subject, html, imageUrl, videoUrl, videoPosterUrl })
     });
     const data = await res.json();
     if (!res.ok || data.error) {

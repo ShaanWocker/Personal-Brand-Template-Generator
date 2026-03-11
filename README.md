@@ -122,7 +122,7 @@ npx vercel
    - Application type: **Web application**
    - Authorised redirect URIs: add your deployed URL + `/api/auth/callback`
      ```
-     https://your-app.vercel.app/api/auth/callback
+     https://brand-kit.shaanwocker.online/api/auth/callback
      ```
    - Copy the **Client ID** and **Client Secret**
 
@@ -136,8 +136,8 @@ In the Vercel Dashboard → Project → Settings → Environment Variables, add:
 |---|---|---|
 | `GOOGLE_CLIENT_ID` | `12345-abc.apps.googleusercontent.com` | From Google Cloud Console |
 | `GOOGLE_CLIENT_SECRET` | `GOCSPX-…` | From Google Cloud Console |
-| `GOOGLE_REDIRECT_URI` | `https://your-app.vercel.app/api/auth/callback` | Must match the URI in Google Console |
-| `APP_URL` | `https://your-app.vercel.app` | No trailing slash |
+| `GOOGLE_REDIRECT_URI` | `https://brand-kit.shaanwocker.online/api/auth/callback` | Must match the URI in Google Console. Replace with your own domain. |
+| `APP_URL` | `https://brand-kit.shaanwocker.online` | No trailing slash. Replace with your own domain. |
 | `NODE_ENV` | `production` | Enables Secure flag on cookies |
 
 > ⚠️ **Never commit secrets to source control.** These values live only in Vercel's environment.
@@ -175,10 +175,22 @@ Once you've customised your template, you have three export options:
 
 ## ✦ Gmail Integration — Privacy & Security
 
+### Two-step connection model
+
+Brand Kit uses **incremental authorization** — scopes are requested only when needed:
+
+| Step | Endpoint | Scopes | What it enables |
+|---|---|---|---|
+| **Step 1 — Sign in** | `/api/auth/google?step=basic` | `openid email profile` | Identifies your Google account |
+| **Step 2 — Enable Drafts** | `/api/auth/google?step=gmail_draft` | `openid email profile` + `gmail.compose` | Creates Gmail drafts |
+
+You can use the email template builder (HTML export, plain text) without ever completing Step 2.
+
 - **Permission requested**: `gmail.compose` only — this allows creating drafts. The app **cannot** read your emails, access your contacts, or send email automatically.
 - **No auto-send**: Every draft lands in your Gmail Drafts folder. You review and send it yourself.
 - **Token storage**: OAuth tokens are stored in server-side `httpOnly` cookies. They are never exposed to JavaScript or `localStorage`.
-- **Revocation**: Click **Disconnect** at any time to clear your session. You can also revoke access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions).
+- **Identity binding**: A stable Google account identifier (`sub`) is stored to prevent silent account switching (Cross-Account Protection).
+- **Revocation**: Click **Disconnect** (or **Sign out**) at any time. The app revokes the token at Google before clearing cookies. You can also revoke access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions).
 
 ---
 

@@ -1124,7 +1124,7 @@ function showToast(msg, isError) {
 /* ============================================================
    GMAIL OAUTH INTEGRATION
    ============================================================ */
-let gmailState = { connected: false, email: '', name: '' };
+let gmailState = { signedIn: false, gmailEnabled: false, connected: false, email: '', name: '' };
 
 async function checkGmailStatus() {
   try {
@@ -1133,7 +1133,7 @@ async function checkGmailStatus() {
     const data = await res.json();
     gmailState = data;
   } catch (_) {
-    gmailState = { connected: false };
+    gmailState = { signedIn: false, gmailEnabled: false, connected: false };
   }
   renderGmailWidget();
   renderGmailDraftUI();
@@ -1142,18 +1142,28 @@ async function checkGmailStatus() {
 function renderGmailWidget() {
   const w = document.getElementById('gmail-widget');
   if (!w) return;
-  if (gmailState.connected) {
+  if (gmailState.gmailEnabled || gmailState.connected) {
     w.innerHTML = `
       <div class="gmail-widget">
         <span class="gmail-connected">✓ Gmail</span>
         <span class="gmail-email" aria-label="Connected Gmail account">${escHtml(gmailState.email || '')}</span>
         <button class="btn-gmail btn-gmail-disconnect" onclick="disconnectGmail()">Disconnect</button>
       </div>`;
+  } else if (gmailState.signedIn) {
+    w.innerHTML = `
+      <div class="gmail-widget">
+        <span class="gmail-connected" style="color:var(--gold-lt)">✓ Signed in</span>
+        <span class="gmail-email" aria-label="Signed in Google account">${escHtml(gmailState.email || '')}</span>
+        <button class="btn-gmail" onclick="connectGmail('gmail_draft')">
+          Enable Gmail Drafts
+        </button>
+        <button class="btn-gmail btn-gmail-disconnect" onclick="disconnectGmail()">Sign out</button>
+      </div>`;
   } else {
     w.innerHTML = `
-      <button class="btn-gmail" onclick="connectGmail()">
+      <button class="btn-gmail" onclick="connectGmail('basic')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
-        Connect Gmail
+        Sign in with Google
       </button>`;
   }
 }
@@ -1161,7 +1171,7 @@ function renderGmailWidget() {
 function renderGmailDraftUI() {
   const el = document.getElementById('gmail-draft-ui');
   if (!el) return;
-  if (gmailState.connected) {
+  if (gmailState.gmailEnabled || gmailState.connected) {
     el.innerHTML = `
       <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem;">
         Connected as <strong style="color:var(--gold-lt)">${escHtml(gmailState.email || '')}</strong>.
@@ -1170,13 +1180,22 @@ function renderGmailDraftUI() {
       <button class="btn btn-draft" id="btn-create-draft" onclick="createGmailDraft()" style="margin-top:0">
         ✉ Create Gmail Draft
       </button>`;
+  } else if (gmailState.signedIn) {
+    el.innerHTML = `
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem;">
+        You are signed in as <strong style="color:var(--gold-lt)">${escHtml(gmailState.email || '')}</strong>.
+        Enable Gmail drafts to create a draft directly in your inbox.
+      </div>
+      <button class="btn-gmail" onclick="connectGmail('gmail_draft')">
+        Enable Gmail Drafts
+      </button>`;
   } else {
     el.innerHTML = `
       <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem;">
         Connect your Gmail account to create a draft directly in your inbox.
       </div>
-      <button class="btn-gmail" onclick="connectGmail()">
-        Connect Gmail
+      <button class="btn-gmail" onclick="connectGmail('basic')">
+        Sign in with Google
       </button>
       <div style="font-size:0.7rem;color:var(--muted);margin-top:0.6rem;">
         Requires deployment to Vercel with Google OAuth configured.
@@ -1184,15 +1203,16 @@ function renderGmailDraftUI() {
   }
 }
 
-function connectGmail() {
-  window.location.href = '/api/auth/google';
+function connectGmail(step) {
+  const s = (step === 'gmail_draft') ? 'gmail_draft' : 'basic';
+  window.location.href = '/api/auth/google?step=' + s;
 }
 
 async function disconnectGmail() {
   try {
     await fetch('/api/auth/disconnect', { method: 'POST' });
   } catch (_) {}
-  gmailState = { connected: false };
+  gmailState = { signedIn: false, gmailEnabled: false, connected: false };
   renderGmailWidget();
   renderGmailDraftUI();
 }
@@ -1258,11 +1278,19 @@ async function createGmailDraft() {
 function handleRedirectParams() {
   const params = new URLSearchParams(window.location.search);
   if (params.has('connected')) {
-    showToast('✓ Gmail connected successfully!');
+    showToast('✓ Gmail drafts enabled successfully!');
+    history.replaceState({}, '', window.location.pathname);
+  }
+  if (params.has('signed_in')) {
+    showToast('✓ Signed in with Google! Now enable Gmail Drafts to create drafts.');
     history.replaceState({}, '', window.location.pathname);
   }
   if (params.has('error')) {
-    showToast('⚠ Gmail connection failed: ' + params.get('error'), true);
+    const errCode = params.get('error');
+    const errMsg = errCode === 'account_mismatch'
+      ? '⚠ Account mismatch: a different Google account was used. Please sign out and reconnect.'
+      : '⚠ Connection failed: ' + errCode;
+    showToast(errMsg, true);
     history.replaceState({}, '', window.location.pathname);
   }
 }

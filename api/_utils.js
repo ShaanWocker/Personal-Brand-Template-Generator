@@ -146,22 +146,40 @@ async function verifyGoogleIdToken(idToken, { nonce, clientId }) {
   return payload;
 }
 
+/** Simple in-process cache for RISC JWKS keys (TTL: 6 hours). */
+const _riscJwksCache = { keys: null, expiresAt: 0 };
+const RISC_JWKS_TTL_MS = 6 * 60 * 60 * 1000;
+
 /**
- * Fetch the JWKS URI from Google's RISC discovery document.
+ * Fetch and cache JWKS keys from Google's RISC discovery document.
+ * Re-fetches at most once per RISC_JWKS_TTL_MS to reduce external calls.
  * See: https://developers.google.com/identity/protocols/risc
  */
-async function getRiscJwksUri() {
-  const res = await fetch('https://accounts.google.com/.well-known/risc-configuration');
-  if (!res.ok) throw new Error(`Failed to fetch RISC discovery document: HTTP ${res.status}`);
-  const config = await res.json();
+async function getRiscJwks() {
+  const now = Date.now();
+  if (_riscJwksCache.keys && now < _riscJwksCache.expiresAt) {
+    return _riscJwksCache.keys;
+  }
+  const discoveryRes = await fetch('https://accounts.google.com/.well-known/risc-configuration');
+  if (!discoveryRes.ok) {
+    throw new Error(`Failed to fetch RISC discovery document: HTTP ${discoveryRes.status}`);
+  }
+  const config = await discoveryRes.json();
   if (!config.jwks_uri) throw new Error('RISC discovery document missing jwks_uri');
-  return config.jwks_uri;
+
+  const jwksRes = await fetch(config.jwks_uri);
+  if (!jwksRes.ok) throw new Error(`Failed to fetch RISC JWKS: HTTP ${jwksRes.status}`);
+  const { keys } = await jwksRes.json();
+
+  _riscJwksCache.keys = keys;
+  _riscJwksCache.expiresAt = now + RISC_JWKS_TTL_MS;
+  return keys;
 }
 
 /**
  * Verify a Google RISC Security Event Token (SET) JWT.
- * Fetches the JWKS URI from Google's RISC discovery document, then validates
- * the token's RS256 signature, issuer, audience, and expiration.
+ * Uses cached JWKS from Google's RISC discovery document to validate the
+ * token's RS256 signature, issuer, audience, and expiration.
  * Returns the decoded payload on success; throws on any validation failure.
  */
 async function verifyRiscToken(token, audience) {
@@ -172,10 +190,7 @@ async function verifyRiscToken(token, audience) {
   const header = JSON.parse(Buffer.from(headerB64, 'base64url').toString('utf8'));
   if (header.alg !== 'RS256') throw new Error(`Unsupported JWT algorithm: ${header.alg}`);
 
-  const jwksUri = await getRiscJwksUri();
-  const jwksRes = await fetch(jwksUri);
-  if (!jwksRes.ok) throw new Error(`Failed to fetch RISC JWKS: HTTP ${jwksRes.status}`);
-  const { keys } = await jwksRes.json();
+  const keys = await getRiscJwks();
 
   const jwk = keys.find(k => k.kid === header.kid);
   if (!jwk) throw new Error(`No matching JWKS key for kid: ${header.kid}`);

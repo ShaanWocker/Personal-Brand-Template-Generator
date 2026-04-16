@@ -56,10 +56,12 @@ module.exports = async function handler(req, res) {
   // Google delivers SETs as a raw JWT string in the request body
   // (Content-Type: application/secevent+jwt).
   let rawToken;
-  try {
-    rawToken = (typeof req.body === 'string' ? req.body : JSON.stringify(req.body)).trim();
-  } catch (_) {
-    return res.status(400).json({ error: 'Could not read request body' });
+  if (typeof req.body === 'string') {
+    rawToken = req.body.trim();
+  } else if (Buffer.isBuffer(req.body)) {
+    rawToken = req.body.toString('utf8').trim();
+  } else {
+    return res.status(400).json({ error: 'Expected raw JWT body (application/secevent+jwt)' });
   }
 
   if (!rawToken) {
@@ -94,9 +96,8 @@ module.exports = async function handler(req, res) {
       (subjectId ? ` for Google sub: ${subjectId}` : ''),
     );
 
-    // In a production system that persists OAuth tokens server-side (e.g. a
-    // database keyed by Google `sub`), look up and revoke the stored refresh
-    // token here:
+    // In a production system with a server-side token store, look up the stored
+    // refresh token for this Google `sub` and revoke it:
     //
     //   const refreshToken = await db.tokens.findByGoogleSub(subjectId);
     //   if (refreshToken) await revokeGoogleToken(refreshToken);
@@ -105,7 +106,6 @@ module.exports = async function handler(req, res) {
     // there is no server-side token to revoke.  The event is acknowledged and
     // logged; the user will be required to re-authenticate on their next visit
     // once Google invalidates the token on its side.
-    void revokeGoogleToken; // available for use when a token store is added
   }
 
   // Google expects HTTP 202 Accepted (or 200) for successful event delivery.

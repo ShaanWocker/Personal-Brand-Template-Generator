@@ -146,4 +146,60 @@ async function verifyGoogleIdToken(idToken, { nonce, clientId }) {
   return payload;
 }
 
-module.exports = { parseCookies, buildCookie, cookieDefaults, refreshAccessToken, generatePKCE, generateNonce, verifyGoogleIdToken };
+/**
+ * Fetch the JWKS URI from Google's RISC discovery document.
+ * See: https://developers.google.com/identity/protocols/risc
+ */
+async function getRiscJwksUri() {
+  const res = await fetch('https://accounts.google.com/.well-known/risc-configuration');
+  if (!res.ok) throw new Error(`Failed to fetch RISC discovery document: HTTP ${res.status}`);
+  const config = await res.json();
+  if (!config.jwks_uri) throw new Error('RISC discovery document missing jwks_uri');
+  return config.jwks_uri;
+}
+
+/**
+ * Verify a Google RISC Security Event Token (SET) JWT.
+ * Fetches the JWKS URI from Google's RISC discovery document, then validates
+ * the token's RS256 signature, issuer, audience, and expiration.
+ * Returns the decoded payload on success; throws on any validation failure.
+ */
+async function verifyRiscToken(token, audience) {
+  const parts = token.split('.');
+  if (parts.length !== 3) throw new Error('Invalid JWT format');
+  const [headerB64, payloadB64, signatureB64] = parts;
+
+  const header = JSON.parse(Buffer.from(headerB64, 'base64url').toString('utf8'));
+  if (header.alg !== 'RS256') throw new Error(`Unsupported JWT algorithm: ${header.alg}`);
+
+  const jwksUri = await getRiscJwksUri();
+  const jwksRes = await fetch(jwksUri);
+  if (!jwksRes.ok) throw new Error(`Failed to fetch RISC JWKS: HTTP ${jwksRes.status}`);
+  const { keys } = await jwksRes.json();
+
+  const jwk = keys.find(k => k.kid === header.kid);
+  if (!jwk) throw new Error(`No matching JWKS key for kid: ${header.kid}`);
+
+  const key = await subtle.importKey(
+    'jwk', jwk,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false, ['verify'],
+  );
+
+  const sigInput = Buffer.from(`${headerB64}.${payloadB64}`);
+  const signature = Buffer.from(signatureB64, 'base64url');
+  const valid = await subtle.verify('RSASSA-PKCS1-v1_5', key, signature, sigInput);
+  if (!valid) throw new Error('RISC JWT signature verification failed');
+
+  const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8'));
+  const now = Math.floor(Date.now() / 1000);
+
+  const validIssuers = ['https://accounts.google.com', 'accounts.google.com'];
+  if (!validIssuers.includes(payload.iss)) throw new Error(`Invalid issuer: ${payload.iss}`);
+  if (payload.aud !== audience) throw new Error('Audience mismatch');
+  if (payload.exp && payload.exp < now) throw new Error('Token expired');
+
+  return payload;
+}
+
+module.exports = { parseCookies, buildCookie, cookieDefaults, refreshAccessToken, generatePKCE, generateNonce, verifyGoogleIdToken, verifyRiscToken };
